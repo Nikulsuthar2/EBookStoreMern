@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { validate } from "email-validator";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/ReactToastify.css";
 import { PulseLoader } from "react-spinners";
 import { decodeJWT, isLoggedIn, loginUser } from "../Utils/UserAuthApi";
-import '../CSS/loginsignin.css';
 import { FaArrowLeft } from "react-icons/fa6";
+import { Button, Form, Input, message} from "antd";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    //e.preventDefault();
     if (!validate(email)) {
-      toast.error("Please enter a valid email address");
+      messageApi.warning("Please enter a valid email address");
       return;
     }
     const user = {
@@ -28,11 +27,16 @@ const LoginPage = () => {
     };
 
     setIsSubmitting(true);
+    messageApi.open({
+      type: 'loading',
+      content: 'Logging in..',
+      duration: 0,
+    });
     const res = await loginUser(user);
     setIsSubmitting(false);
-
+    messageApi.destroy();
     if (res.data.Result) {
-      toast.success(res.data.Data);
+      messageApi.success("Account Created")
       const token = res.data.token;
       localStorage.setItem("accessToken", res.data.token);
       localStorage.setItem("userInfo", decodeJWT(token).UserInfo);
@@ -42,7 +46,7 @@ const LoginPage = () => {
         navigate("/home");
       }
     } else {
-      toast.error(res.data.Data);
+      messageApi.error(res.data.Data);
     }
   };
 
@@ -62,42 +66,58 @@ const LoginPage = () => {
   }, []);
 
   return (
-    <div className="mainbody">
-      <Link className="topbackbtn" to={"/"}><FaArrowLeft /> Back to home</Link>
-      <form onSubmit={handleLogin}>
-        <label className="formheading">Login</label>
-        <div class="formcontrols">
+    <div className="h-screen">
+      {contextHolder}
+      <div className="absolute top-0 w-full bg-white flex items-center gap-2 font-bold p-[10px] border-b-[1px] border-b-[#bdbdbd]">
+        <Button type="primary" size="large" icon={<FaArrowLeft />} onClick={()=>navigate("/")}></Button>
+        <span >Back to home</span>
+      </div>
+      <div className="h-full pt-10 flex justify-center items-center">
+        <Form onSubmit={handleLogin} onFinish={handleLogin} className="flex flex-col min-w-[350px] gap-0 p-[20px] rounded-xl md:shadow-lg">
+          <label className="text-center font-bold text-3xl mb-4">Login</label>
           <label>Email Address</label>
-          <input
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
-            autoComplete="username"
-            class="inputfield"
-            type="email"
-            required={true}
-            placeholder="Enter your email address"
-          />
-        </div>
-        <div class="formcontrols">
+          <Form.Item
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: 'Please input your email!',
+              },
+              {
+                pattern:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message:'Please enter a valid email'
+              }
+            ]}
+          >
+            <Input type="email" onChange={(e) => setEmail(e.target.value)} value={email} size="large" variant="filled" placeholder="Enter your email" allowClear/>
+          </Form.Item>
           <label>Password</label>
-          <input
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-            minLength={8}
-            class="inputfield"
-            autoComplete="current-password"
-            type="password"
-            required={true}
-            placeholder="Enter your password"
-          />
-        </div>
-
-        <button className="loginbtn" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? <PulseLoader color="white" size={10} /> : "Login"}
-        </button>
-        <span className="centertext"><Link className="linkbtn" to={"/signin"}>Don't have an account?</Link></span>
-      </form>
-      <ToastContainer position="bottom-right" />
+          <Form.Item
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: 'Please input your password!',
+              },
+              {
+                type: 'string',
+                min: 8,
+                max: 16
+              },
+            ]}
+          >
+            <Input.Password onChange={(e) => setPassword(e.target.value)} value={password} size="large" variant="filled" placeholder="Enter your password" allowClear />
+          </Form.Item>
+          <Button htmlType="submit" type="primary" size="large" disabled={isSubmitting}>
+            {isSubmitting ? <PulseLoader color="black" size={10} /> : "Login"}
+          </Button>
+          <span className="text-center">
+            <Button htmlType="button" type="link" size="large" onClick={()=>navigate("/signin")}>
+              Don't have an account?
+            </Button>
+          </span>
+        </Form>
+      </div>
     </div>
   );
 };

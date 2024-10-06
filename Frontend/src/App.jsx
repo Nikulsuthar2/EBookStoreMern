@@ -1,5 +1,4 @@
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
-import './App.css'
 import AuthLayout from './Layouts/AuthLayout';
 import HomeMaster from './Layouts/HomeMaster';
 import Landing from './Pages/Landing';
@@ -17,14 +16,17 @@ function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <>
+      {/* Auth Routes */}
       <Route path='/' element={<AuthLayout />}>
         <Route index element={<Landing/>}></Route>
         <Route path='/login' element={<LoginPage/>}></Route>
         <Route path='/signin' element={<SigninPage/>}></Route>
       </Route>
+      {/* Users Pages */}
       <Route path='/home' element={<HomeMaster/>}>
         <Route index element={<HomePage/>}/>
       </Route>
+      {/* Admin Pages */}
       <Route path='/admin' element={<AdminMaster/>}>
         <Route index element={<AdminHomePage/>}/>
         <Route path='/admin/ebooks' element={<BookListPage/>}/>

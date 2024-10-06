@@ -61,6 +61,7 @@ const refreshAccessToken = async () => {
     await axios.post(import.meta.env.VITE_BACKEND_URL +"auth/refreshtoken",{},{withCredentials:true})
     .then(res=>{
         if(res.statusText === 'OK'){
+            console.log(res.data.accessToken)
             localStorage.setItem('accessToken',res.data.accessToken);
             return true;
         }

@@ -1,5 +1,5 @@
 import express from 'express'
-import { handleAddBook, handleAddCategory, handleGetAllBooks, handleGetCategory } from '../controllers/bookAdminController.js';
+import { handleAddBook, handleAddCategory, handleDeleteBook, handleDeleteCategory, handleGetAllBooks, handleGetCategory, handleUpdateCategory } from '../controllers/bookAdminController.js';
 import multer from 'multer';
 import path from 'path';
 
@@ -19,9 +19,12 @@ const upload = multer({storage});
 
 const bookAdminRouter = express.Router();
 
-bookAdminRouter.post("/addbook", upload.fields([{name:'thumbnail'},{name:'bookfile'}]), handleAddBook);
-bookAdminRouter.post("/addcategory", handleAddCategory);
-bookAdminRouter.get("/getcategory", handleGetCategory);
 bookAdminRouter.get("/getallbooks", handleGetAllBooks);
+bookAdminRouter.post("/deletebooks", handleDeleteBook);
+bookAdminRouter.post("/addbook", upload.fields([{name:'thumbnail'},{name:'bookfile'}]), handleAddBook);
+bookAdminRouter.get("/getcategory", handleGetCategory);
+bookAdminRouter.post("/addcategory", handleAddCategory);
+bookAdminRouter.post("/updatecategory", handleUpdateCategory);
+bookAdminRouter.post("/deletecategory", handleDeleteCategory);
 
 export default bookAdminRouter;

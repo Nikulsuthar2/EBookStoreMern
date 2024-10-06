@@ -28,13 +28,13 @@ nav {
 }
 
 .active {
-    background-color: var(--colorbtnprime);
+    color: var(--colorbtnprime);
     padding: 5px 20px;
     border-radius: 20px;
-    color: white;
 }
 .active:hover{
     color: white;
+    font-weight: bold;
 }
 
 .nav-actions{
