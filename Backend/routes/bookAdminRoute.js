@@ -1,5 +1,5 @@
 import express from 'express'
-import { handleAddBook, handleAddCategory, handleDeleteBook, handleDeleteCategory, handleGetAllBooks, handleGetCategory, handleUpdateCategory } from '../controllers/bookAdminController.js';
+import { handleAddBook, handleAddCategory, handleDeleteBook, handleDeleteCategory, handleGetAllBooks, handleGetCategory, handleGetUserList, handleUpdateCategory } from '../controllers/bookAdminController.js';
 import multer from 'multer';
 import path from 'path';
 
@@ -26,5 +26,7 @@ bookAdminRouter.get("/getcategory", handleGetCategory);
 bookAdminRouter.post("/addcategory", handleAddCategory);
 bookAdminRouter.post("/updatecategory", handleUpdateCategory);
 bookAdminRouter.post("/deletecategory", handleDeleteCategory);
+
+bookAdminRouter.get("/getallusers", handleGetUserList);
 
 export default bookAdminRouter;

@@ -10,6 +10,8 @@ import AdminHomePage from './Pages/AdminHomePage';
 import BookListPage from './Pages/BookListPage';
 import AddBookPage from './Pages/AddBookPage';
 import BookCategoryPage from './Pages/BookCategoryPage';
+import UserListPage from './Pages/UserListPage';
+import PurchaseReport from './Pages/PurchaseReport';
 
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
         <Route path='/admin/ebooks' element={<BookListPage/>}/>
         <Route path='/admin/ebooks/addBook' element={<AddBookPage/>}/>
         <Route path='/admin/category' element={<BookCategoryPage/>}/>
+        <Route path='/admin/users' element={<UserListPage/>}/>
+        <Route path='/admin/purchasereport' element={<PurchaseReport/>}/>
       </Route>
       </>
     )

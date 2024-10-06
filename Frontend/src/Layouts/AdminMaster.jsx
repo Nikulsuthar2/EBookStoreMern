@@ -63,6 +63,8 @@ const AdminMaster = () => {
       setSelectedKeys(["2"]);
     if(href.includes("/admin/category"))
       setSelectedKeys(["3"]);
+    if(href.includes("/admin/users"))
+      setSelectedKeys(["4"]);
   },[href])
 
   const navigateTo = (key) => {
@@ -78,6 +80,14 @@ const AdminMaster = () => {
     else if(key == 3) {
       setSelectedKeys(["3"])
       navigate("/admin/category");
+    }
+    else if(key == 4) {
+      setSelectedKeys(["4"])
+      navigate("/admin/users");
+    }
+    else if(key == 5) {
+      setSelectedKeys(["5"])
+      navigate("/admin/purchasereport");
     }
     else if (key == 6) {
       handleLogout();
@@ -101,6 +111,7 @@ const AdminMaster = () => {
           collapsible
           collapsed={collapsed}
           onCollapse={(value) => setCollapsed(value)}
+          className="border-r-[1px] border-solid border-[#0505050f]"
         >
           <div className="demo-logo-vertical mt-4 m-4 p-[10px] rounded-lg flex justify-center text-black bg-[#41414110] text-md items-center gap-2 font-bold"><GiWhiteBook size={20} color="#3ca3ff" />{ collapsed ? "" : "E-BookStore"}</div>
           <Menu

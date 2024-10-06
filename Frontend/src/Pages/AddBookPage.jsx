@@ -13,6 +13,7 @@ import {
   Input,
   DatePicker,
   Select,
+  InputNumber,
 } from "antd";
 import { InboxOutlined, UploadOutlined, PlusOutlined } from "@ant-design/icons";
 import { MdOutlineCurrencyRupee } from "react-icons/md";
@@ -77,8 +78,6 @@ const AddBookPage = () => {
         setLanguage("English");
         setSelectedItems([]);
         setDesc("")
-        setBookfile(null);
-        setBookthumb(null);
       }
       else
         messageApi.error(res.data.Data);
@@ -94,7 +93,7 @@ const AddBookPage = () => {
 
   useEffect(() => {
     handleGetCategory();
-  });
+  },[]);
 
   return (
     <div className="h-screen w-full overflow-x-hidden overflow-y-auto">
@@ -133,7 +132,7 @@ const AddBookPage = () => {
               />
               <label>Total Pages</label>
               <Input
-              value={totalpage} onChange={(e)=>setTotalpage(e.target.value)}
+                value={totalpage} onChange={(e)=>setTotalpage(e.target.value)}
                 type="number"
                 placeholder="Enter total pages"
                 allowClear
