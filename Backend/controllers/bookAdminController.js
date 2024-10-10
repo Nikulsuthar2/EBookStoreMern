@@ -141,7 +141,7 @@ const handleUpdateBook = async (req, res) => {
       if(updateData.category){
         updateData.category = updateData.category
           .split(",")
-          .map((cat) => new ObjectId(cat));
+          .map((cat) => new mongoose.Types.ObjectId(cat));
       }
 
       const result = await Book.findByIdAndUpdate(id, updateData, {
