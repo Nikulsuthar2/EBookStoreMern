@@ -83,7 +83,7 @@ const HomePage = () => {
               </p>
             )}
 
-            <span>{latestBook.description}</span>
+            <span className="line-clamp-3">{latestBook.description}</span>
             <span className="flex gap-2">
               <Button><ShoppingCartOutlined /> Add to Cart</Button>
               <Button><BiPurchaseTag />Buy</Button>
