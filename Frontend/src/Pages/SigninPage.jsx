@@ -23,6 +23,7 @@ const SigninPage = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleSignin = async (e) => {
+    console.log("hello")
     e.preventDefault();
     if (!validate(email)) {
       messageApi.warning("Please enter a valid email address");
@@ -72,7 +73,7 @@ const SigninPage = () => {
         <span >Back to home</span>
       </div>
       <div className="h-full pt-10 flex justify-center items-center">
-        <Form onSubmit={handleSignin} className="flex flex-col min-w-[350px] gap-0 p-[20px] rounded-xl md:shadow-lg">
+        <Form className="flex flex-col min-w-[350px] gap-0 p-[20px] rounded-xl md:shadow-lg">
           <label className="text-center font-bold text-3xl mb-4">Create Account</label>
           <label>Name</label>
           <Form.Item
@@ -136,7 +137,7 @@ const SigninPage = () => {
           >
             <Input.Password onChange={(e) => setCpassword(e.target.value)} value={cpassword} size="large" variant="filled" placeholder="Confirm your password" allowClear required={true} />
           </Form.Item>
-          <Button htmlType="submit" type="primary" size="large" disabled={isSubmitting}>
+          <Button onClick={handleSignin} type="primary" size="large" disabled={isSubmitting}>
             {isSubmitting ? <PulseLoader color="black" size={10} /> : "Signin"}
           </Button>
           <span className="text-center">

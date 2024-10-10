@@ -26,7 +26,7 @@ const AdminHomePage = () => {
         Dashboard
       </div>
       <div className="p-4">
-        <div className="flex gap-1">
+        <div className="flex gap-4">
           <Card size="small">
             <Statistic
               title="Total Users"
