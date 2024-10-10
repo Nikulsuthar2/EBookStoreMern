@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaArrowLeft, FaPercent, FaRupeeSign } from "react-icons/fa6";
+import moment from "moment";
 import bookdemo from "../assets/book1.jpg";
 import {
   Button,
@@ -19,68 +20,127 @@ import { InboxOutlined, UploadOutlined, PlusOutlined } from "@ant-design/icons";
 import { MdOutlineCurrencyRupee } from "react-icons/md";
 import { TbRosetteDiscount } from "react-icons/tb";
 import { languages } from "../Utils/data";
-import { addBook, getcategory } from "../Utils/AdminDataApi";
+import {
+  addBook,
+  getBookDetails,
+  getcategory,
+  updateBook,
+} from "../Utils/AdminDataApi";
 
-const AddBookPage = () => {
+const AddBookPage = ({ title, isUpdate }) => {
   const [messageApi, contextHolder] = message.useMessage();
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [bookData, setBookData] = useState(null);
   const [categoryList, setCategoryList] = useState(null);
-  const [bookthumb, setBookthumb] = useState(null);
-  const [bookfile, setBookfile] = useState(null);
 
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [bookthumb, setBookthumb] = useState([]);
+  const [bookfile, setBookfile] = useState([]);
   const [booktitle, setBooktitle] = useState("");
   const [author, setAuthor] = useState("");
   const [publisher, setPublisher] = useState("");
-  const [publishYear, setPublishYear] = useState("");
+  const [publishYear, setPublishYear] = useState(null);
   const [ISBN, setISBN] = useState("");
   const [price, setPrice] = useState(0);
   const [discount, setDiscount] = useState(0);
-  const [totalpage, setTotalpage] = useState(0)
+  const [totalpage, setTotalpage] = useState(0);
   const [language, setLanguage] = useState("English");
   const [desc, setDesc] = useState("");
 
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const handleAddBook = async (e) => {
     const formData = new FormData();
-    formData.append('title',booktitle);
-    formData.append('author',author);
-    formData.append('publisher',publisher);
-    formData.append('publishyear',publishYear);
-    formData.append('isbn',ISBN);
-    formData.append('price',price);
-    formData.append('discount',discount);
-    formData.append('language',language);
-    formData.append('totalpage',totalpage);
-    formData.append('category',selectedItems.map((data)=>data.value));
-    formData.append('description',desc);
-    formData.append('bookfile',bookfile);
-    formData.append('thumbnail',bookthumb);
+    if (isUpdate) {
+      if (booktitle != "" && booktitle != bookData.title)
+        formData.append("title", booktitle);
+      if (author != ""  && author != bookData.author)
+        formData.append("author", author);
+      if (publisher != "" && publisher != bookData.publisher)
+        formData.append("publisher", publisher);
+      if (publishYear != "" && publishYear.toString() != bookData.publishyear)
+        formData.append("publishyear", publishYear);
+      if (ISBN != "" && ISBN != bookData.isbn) formData.append("isbn", ISBN);
+      if (price != "" && price != bookData.price)
+        formData.append("price", price);
+      if (discount != "" && discount != bookData.discount)
+        formData.append("discount", discount);
+      if (language != "" && language != bookData.language)
+        formData.append("language", language);
+      if (totalpage != "" && totalpage != bookData.totalpages)
+        formData.append("totalpages", totalpage);
+      if (desc != bookData.description) formData.append("description", desc);
+      formData.append(
+        "category",
+        selectedItems.length != 0 ? selectedItems.map((data) => data) : []
+      );
+      if (bookfile.length > 0) formData.append("bookfile", bookfile[0]);
+      if (bookthumb.length > 0) formData.append("thumbnail", bookthumb[0]);
 
-    messageApi.open({
-      type: 'loading',
-      content: 'Loading Books..',
-      duration: 0,
-    });
-    const res = await addBook(formData);
-    messageApi.destroy();
-    if(res){
-      if(res.data.Result){
-        messageApi.success(res.data.Data);
-        setBooktitle("");
-        setAuthor("");
-        setPublisher("");
-        setPublishYear("");
-        setISBN("");
-        setTotalpage(0);
-        setPrice(0);
-        setDiscount(0);
-        setLanguage("English");
-        setSelectedItems([]);
-        setDesc("")
+      messageApi.open({
+        type: "loading",
+        content: "Updating Book..",
+        duration: 0,
+      });
+      const res = await updateBook(bookData._id, formData);
+      messageApi.destroy();
+      if (res) {
+        if (res.data.Result) {
+          messageApi.success(res.data.Data);
+          setTimeout(()=>{
+            navigate("/admin/ebooks")
+          },1000)
+        } else messageApi.error(res.data.Data);
       }
-      else
-        messageApi.error(res.data.Data);
+    } else {
+      console.log("adding book")
+      if (bookfile.length == 0 || bookthumb.length == 0) {
+        messageApi.error("Please upload a book pdf or thumbnail image");
+        return;
+      }
+      formData.append("title", booktitle);
+      formData.append("author", author);
+      formData.append("publisher", publisher);
+      formData.append("publishyear", publishYear);
+      formData.append("isbn", ISBN);
+      formData.append("price", price);
+      formData.append("discount", discount);
+      formData.append("language", language);
+      formData.append("totalpages", totalpage);
+      console.log(selectedItems)
+      formData.append(
+        "category",
+        selectedItems.map((data) => data)
+      );
+      formData.append("description", desc);
+      formData.append("bookfile", bookfile[0]);
+      formData.append("thumbnail", bookthumb[0]);
+
+      messageApi.open({
+        type: "loading",
+        content: "Adding Book..",
+        duration: 0,
+      });
+      const res = await addBook(formData);
+      messageApi.destroy();
+      if (res) {
+        if (res.data.Result) {
+          messageApi.success(res.data.Data);
+          setBooktitle("");
+          setAuthor("");
+          setPublisher("");
+          setPublishYear("");
+          setISBN("");
+          setTotalpage(0);
+          setPrice(0);
+          setDiscount(0);
+          setLanguage("English");
+          setSelectedItems([]);
+          setDesc("");
+          setBookthumb([]);
+          setBookfile([]);
+        } else messageApi.error(res.data.Data);
+      }
     }
   };
 
@@ -91,23 +151,48 @@ const AddBookPage = () => {
     }
   };
 
+  const handleGetBookDetails = async (id) => {
+    const res = await getBookDetails(id);
+    if (res) {
+      //console.log(res.data.Data);
+      setBookData(res.data.Data);
+      setBooktitle(res.data.Data.title);
+      setAuthor(res.data.Data.author);
+      setPublisher(res.data.Data.publisher);
+      setPublishYear(res.data.Data.publishyear);
+      setISBN(res.data.Data.isbn);
+      setTotalpage(res.data.Data.totalpages);
+      setPrice(res.data.Data.price);
+      setDiscount(res.data.Data.discount);
+      setLanguage(res.data.Data.language);
+      setSelectedItems(res.data.Data.category);
+      setDesc(res.data.Data.description);
+    }
+  };
+
   useEffect(() => {
+    if (isUpdate) {
+      if (!id) {
+        navigate("/admin/ebooks");
+      }
+      handleGetBookDetails(id);
+    }
     handleGetCategory();
-  },[]);
+  }, []);
 
   return (
     <div className="h-screen w-full overflow-x-hidden overflow-y-auto">
       {contextHolder}
       <div className="bg-white flex gap-4 font-bold text-2xl p-4 border-b-[1px] sticky top-0 z-50">
-        <Button type="primary" onClick={()=>navigate('/admin/ebooks')}>
-          <FaArrowLeft/>
+        <Button type="primary" onClick={() => navigate("/admin/ebooks")}>
+          <FaArrowLeft />
         </Button>
-        Add Book
+        {title}
       </div>
       <div className="p-4">
         <Form className="flex flex-col gap-4" onFinish={handleAddBook}>
-          <div className="flex justify-between gap-4">
-            <div className="flex w-[30%] flex-col gap-1">
+          <div className="flex justify-between gap-4 flex-col md:flex-row">
+            <div className="flex md:w-[30%] flex-col gap-1">
               <label>Book Title</label>
               <Input
                 value={booktitle}
@@ -117,14 +202,33 @@ const AddBookPage = () => {
                 required
               />
               <label>Author Name</label>
-              <Input value={author} onChange={(e)=>setAuthor(e.target.value)} placeholder="Enter author name" allowClear required />
+              <Input
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                placeholder="Enter author name"
+                allowClear
+                required
+              />
               <label>Publisher</label>
-              <Input value={publisher} onChange={(e)=>setPublisher(e.target.value)} placeholder="Enter publisher name" allowClear required />
+              <Input
+                value={publisher}
+                onChange={(e) => setPublisher(e.target.value)}
+                placeholder="Enter publisher name"
+                allowClear
+                required
+              />
               <label>Publish Year</label>
-              <DatePicker onPickerValueChange={(e)=>setPublishYear(e.year())} picker="year" disabledDate={(date)=> date.year() > (new Date()).getFullYear()} required />
+              <DatePicker
+                value={publishYear ? moment().year(publishYear) : null}
+                onPickerValueChange={(e) => setPublishYear(e.year())}
+                picker="year"
+                disabledDate={(date) => date.year() > new Date().getFullYear()}
+                required
+              />
               <label>ISBN</label>
               <Input
-              value={ISBN} onChange={(e)=>setISBN(e.target.value)}
+                value={ISBN}
+                onChange={(e) => setISBN(e.target.value)}
                 type="number"
                 placeholder="Enter book isbn"
                 allowClear
@@ -132,7 +236,8 @@ const AddBookPage = () => {
               />
               <label>Total Pages</label>
               <Input
-                value={totalpage} onChange={(e)=>setTotalpage(e.target.value)}
+                value={totalpage}
+                onChange={(e) => setTotalpage(e.target.value)}
                 type="number"
                 placeholder="Enter total pages"
                 allowClear
@@ -140,10 +245,11 @@ const AddBookPage = () => {
                 required
               />
             </div>
-            <div className="flex w-[30%] flex-col gap-1">
+            <div className="flex md:w-[30%] flex-col gap-1">
               <label>Price</label>
               <Input
-              value={price} onChange={(e)=>setPrice(e.target.value)}
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
                 type="number"
                 prefix={<MdOutlineCurrencyRupee />}
                 placeholder="Enter book price"
@@ -153,7 +259,8 @@ const AddBookPage = () => {
               />
               <label>Discount</label>
               <Input
-              value={discount} onChange={(e)=>setDiscount(e.target.value)}
+                value={discount}
+                onChange={(e) => setDiscount(e.target.value)}
                 type="number"
                 prefix={<FaPercent />}
                 placeholder="Enter book price"
@@ -161,11 +268,10 @@ const AddBookPage = () => {
                 min={0}
                 required
               />
-              
               <label>Language</label>
               <Select
                 value={language}
-                onChange={(e)=>{
+                onChange={(e) => {
                   setLanguage(e);
                 }}
                 required
@@ -188,45 +294,39 @@ const AddBookPage = () => {
                 value={selectedItems}
                 onChange={setSelectedItems}
                 optionFilterProp="children"
-                labelInValue
-                filterOption={(ip,op)=>
+                filterOption={(ip, op) =>
                   op.title.toLowerCase().includes(ip.toLowerCase())
                 }
-                // options={
-                //   categoryList
-                //     ? categoryList.map((item) => ({
-                //         value: item._id,
-                //         label: item.name,
-                //       }))
-                //     : []
-                // }
               >
-                {
-                  categoryList
-                    ? categoryList.map((item) => (
-                      <Select.Option key={item._id} value={item._id} title={item.name}>
+                {categoryList
+                  ? categoryList.map((item) => (
+                      <Select.Option
+                        key={item._id}
+                        value={item._id}
+                        title={item.name}
+                      >
                         {item.name}
                       </Select.Option>
                     ))
-                    : []
-                }
+                  : []}
               </Select>
               <label>Description</label>
-              <Input.TextArea rows={4}value={desc} onChange={(e)=>setDesc(e.target.value)} />
+              <Input.TextArea
+                rows={4}
+                value={desc}
+                onChange={(e) => setDesc(e.target.value)}
+              />
             </div>
-            <div className="flex w-[40%] flex-col gap-2 ">
+            <div className="flex md:w-[40%] flex-col gap-2 ">
               <label>Book File</label>
-              <Form.Item
-                name={"bookfile"}
-                rules={[{ required: true, message: "Please input book file" }]}
-              >
                 <Upload.Dragger
+                  fileList={bookfile}
                   maxCount={1}
                   name="bookfile"
                   height={"150px"}
                   beforeUpload={(file) => {
                     if (file.type === "application/pdf") {
-                      setBookfile(file);
+                      setBookfile([file]);
                       return false;
                     } else {
                       message.error(`${file.name} is not a pdf file`);
@@ -234,7 +334,7 @@ const AddBookPage = () => {
                     }
                   }}
                   onRemove={(file) => {
-                    setBookfile(null);
+                    setBookfile([]);
                   }}
                 >
                   <p className="ant-upload-drag-icon">
@@ -245,15 +345,9 @@ const AddBookPage = () => {
                   </p>
                   <p className="ant-upload-hint">Upload a single pdf file.</p>
                 </Upload.Dragger>
-              </Form.Item>
               <label>Book Thumbnail</label>
-              <Form.Item
-                name={"bookthumb"}
-                rules={[
-                  { required: true, message: "Please input book thumbnail" },
-                ]}
-              >
                 <Upload
+                  fileList={bookthumb}
                   listType="picture-card"
                   maxCount={1}
                   name="bookthumb"
@@ -264,7 +358,7 @@ const AddBookPage = () => {
                       file.type === "image/png" ||
                       file.type === "image/jpeg"
                     ) {
-                      setBookthumb(file);
+                      setBookthumb([file]);
                       return false;
                     } else {
                       message.error(`${file.name} is not a png or jpg file`);
@@ -272,7 +366,7 @@ const AddBookPage = () => {
                     }
                   }}
                   onRemove={(file) => {
-                    setBookthumb(null);
+                    setBookthumb([]);
                   }}
                 >
                   <button
@@ -283,12 +377,15 @@ const AddBookPage = () => {
                     <div style={{ marginTop: 8 }}>Upload</div>
                   </button>
                 </Upload>
-              </Form.Item>
             </div>
           </div>
           <div className="flex justify-center">
-            <Button className="mt-4 w-[300px]" type="primary" htmlType="submit">
-              Upload
+            <Button
+              className="mt-4 w-full md:w-[300px]"
+              type="primary"
+              htmlType="submit"
+            >
+              {isUpdate ? "Update Book" : "Upload Book"}
             </Button>
           </div>
         </Form>

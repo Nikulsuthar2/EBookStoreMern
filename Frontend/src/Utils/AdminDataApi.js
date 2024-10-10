@@ -127,6 +127,66 @@ const getallbooks = async (name) => {
   return res;
 };
 
+const getBookDetails = async (id) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/getbookdetails/"+id, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+}
+
+const getLatestBookDetails = async (id) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/getlatestbookdetails", {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+}
+
+const getCategoryWiseBooks = async (id) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/getcategorywisebooks", {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+}
+
 const addBook = async (data) => {
   let token = localStorage.getItem("accessToken");
   if (isTokenExpired(token)) refreshAccessToken();
@@ -147,6 +207,26 @@ const addBook = async (data) => {
   return res;
 };
 
+const updateBook = async (id,data) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .post(import.meta.env.VITE_BACKEND_URL + "admin/updatebook/"+id, data, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
 const deleteBook = async (bookId) => {
   let token = localStorage.getItem("accessToken");
   if (isTokenExpired(token)) refreshAccessToken();
@@ -154,7 +234,7 @@ const deleteBook = async (bookId) => {
   let res;
   await axios
     .post(
-      import.meta.env.VITE_BACKEND_URL + "admin/deletebooks",
+      import.meta.env.VITE_BACKEND_URL + "admin/deletebook",
       {
         bookId: bookId,
       },
@@ -200,6 +280,10 @@ export {
   getcategory,
   addBook,
   getallbooks,
+  getBookDetails,
+  getLatestBookDetails,
+  getCategoryWiseBooks,
+  updateBook,
   deleteBook,
   getallUsers
 };

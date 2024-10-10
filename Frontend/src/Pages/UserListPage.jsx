@@ -144,6 +144,7 @@ const UserListPage = () => {
       dataIndex: "role",
       key: "role",
       align: "center",
+      render: (text) => <div>{text == 1 ? "Admin" : "User"}</div>
     },
     {
       title: "Total Books",

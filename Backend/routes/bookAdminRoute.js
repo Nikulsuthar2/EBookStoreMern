@@ -1,7 +1,8 @@
 import express from 'express'
-import { handleAddBook, handleAddCategory, handleDeleteBook, handleDeleteCategory, handleGetAllBooks, handleGetCategory, handleGetUserList, handleUpdateCategory } from '../controllers/bookAdminController.js';
+import { handleAddBook, handleAddCategory, handleDeleteBook, handleDeleteCategory, handleGetAllBooks, handleGetBookDetails, handleGetCategory, handleGetCategoryWiseBooks, handleGetLatestBookDetails, handleUpdateBook, handleUpdateCategory } from '../controllers/bookAdminController.js';
 import multer from 'multer';
 import path from 'path';
+import { handleGetUserList } from '../controllers/adminController.js';
 
 const storage = multer.diskStorage({
     destination: (req, file, cb)=>{
@@ -19,9 +20,14 @@ const upload = multer({storage});
 
 const bookAdminRouter = express.Router();
 
-bookAdminRouter.get("/getallbooks", handleGetAllBooks);
-bookAdminRouter.post("/deletebooks", handleDeleteBook);
 bookAdminRouter.post("/addbook", upload.fields([{name:'thumbnail'},{name:'bookfile'}]), handleAddBook);
+bookAdminRouter.get("/getallbooks", handleGetAllBooks);
+bookAdminRouter.get("/getbookdetails/:id", handleGetBookDetails);
+bookAdminRouter.get("/getlatestbookdetails", handleGetLatestBookDetails);
+bookAdminRouter.get("/getcategorywisebooks", handleGetCategoryWiseBooks);
+bookAdminRouter.post("/updatebook/:id",upload.fields([{name:'thumbnail'},{name:'bookfile'}]),  handleUpdateBook);
+bookAdminRouter.post("/deletebook", handleDeleteBook);
+
 bookAdminRouter.get("/getcategory", handleGetCategory);
 bookAdminRouter.post("/addcategory", handleAddCategory);
 bookAdminRouter.post("/updatecategory", handleUpdateCategory);

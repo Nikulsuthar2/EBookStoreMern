@@ -59,12 +59,3 @@ nav {
 .logoutbtn:active {
     transform: translateY(5px);
 }
-
-@media (prefers-color-scheme: dark){
-    nav {
-        border-bottom: 1px solid #2b2b2b;
-    }
-    .nav-menu-btn{
-        color: white;
-    }
-}
