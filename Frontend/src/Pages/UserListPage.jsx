@@ -3,6 +3,7 @@ import { Button, Table, Input, Space, message } from "antd";
 import { getallUsers } from "../Utils/AdminDataApi";
 import { MdRefresh } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
+import { formatTimestamp } from "../Utils/format";
 
 const UserListPage = () => {
   const [userlist, setUserlist] = useState(null);
@@ -158,6 +159,7 @@ const UserListPage = () => {
       dataIndex: "createdAt",
       key: "createdAt",
       align: "center",
+      render: (text) => <div>{formatTimestamp(text).toUpperCase()}</div>
     },
   ];
   const handleGetAllUser = async () => {

@@ -22,10 +22,10 @@ import { TbRosetteDiscount } from "react-icons/tb";
 import { languages } from "../Utils/data";
 import {
   addBook,
-  getBookDetails,
   getcategory,
   updateBook,
 } from "../Utils/AdminDataApi";
+import { getBookDetails } from "../Utils/userDataApi";
 
 const AddBookPage = ({ title, isUpdate }) => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -37,7 +37,7 @@ const AddBookPage = ({ title, isUpdate }) => {
   const [bookfile, setBookfile] = useState([]);
   const [booktitle, setBooktitle] = useState("");
   const [author, setAuthor] = useState("");
-  const [publisher, setPublisher] = useState("");
+  const [publisher, setPublisher] = useState("EBookStore");
   const [publishYear, setPublishYear] = useState(null);
   const [ISBN, setISBN] = useState("");
   const [price, setPrice] = useState(0);
@@ -128,7 +128,7 @@ const AddBookPage = ({ title, isUpdate }) => {
           messageApi.success(res.data.Data);
           setBooktitle("");
           setAuthor("");
-          setPublisher("");
+          setPublisher("EBookStore");
           setPublishYear("");
           setISBN("");
           setTotalpage(0);

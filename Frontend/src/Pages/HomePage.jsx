@@ -2,11 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import "react-toastify/ReactToastify.css";
 import { Button, Card, Empty, message } from "antd";
-import {
-  getCategoryWiseBooks,
-  getLatestBookDetails,
-} from "../Utils/AdminDataApi";
-import { FaIndianRupeeSign } from "react-icons/fa6";
+
 import {
   BarLoader,
   BeatLoader,
@@ -16,13 +12,12 @@ import {
   PulseLoader,
 } from "react-spinners";
 import {
-  EditOutlined,
   ReadOutlined,
-  SettingOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { BiPurchaseTag } from "react-icons/bi";
 import { SiWish } from "react-icons/si";
+import { getCategoryWiseBooks, getLatestBookDetails } from "../Utils/userDataApi";
 
 const HomePage = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -67,7 +62,7 @@ const HomePage = () => {
             src={import.meta.env.VITE_BACKEND_URL + latestBook.thumbnail}
             className="aspect-[2/3] w-[180px] shadow-lg rounded-[10px] object-cover"
           />
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 w-[50%]">
             <h1 className="font-bold text-red-500">New Arrival!</h1>
             <span className="font-bold text-4xl">{latestBook.title}</span>
             {latestBook.price == 0 ? (
@@ -89,7 +84,10 @@ const HomePage = () => {
             )}
 
             <span>{latestBook.description}</span>
-            <span>action button like add to cart, buy, read</span>
+            <span className="flex gap-2">
+              <Button><ShoppingCartOutlined /> Add to Cart</Button>
+              <Button><BiPurchaseTag />Buy</Button>
+            </span>
           </div>
         </div>
       ) : (

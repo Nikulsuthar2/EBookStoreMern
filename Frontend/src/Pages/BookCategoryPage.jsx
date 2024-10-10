@@ -1,8 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { addcategory, deletecategory, getcategory, updatecategory } from "../Utils/AdminDataApi";
+import {
+  addcategory,
+  deletecategory,
+  getcategory,
+  updatecategory,
+} from "../Utils/AdminDataApi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css";
-import { Button, Form, Input, InputNumber, Popconfirm, Space, Table, Modal, Typography, message } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Popconfirm,
+  Space,
+  Table,
+  Modal,
+  Typography,
+  message,
+} from "antd";
 import { FaPlus, FaTrashCan } from "react-icons/fa6";
 import { MdRefresh } from "react-icons/md";
 import { ExclamationCircleFilled } from "@ant-design/icons";
@@ -20,13 +36,7 @@ const EditableCell = ({
   const inputNode = <Input />;
   return (
     <td {...restProps}>
-      {editing ? (
-        <Form.Item name={dataIndex}>
-          {inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
+      {editing ? <Form.Item name={dataIndex}>{inputNode}</Form.Item> : children}
     </td>
   );
 };
@@ -35,9 +45,9 @@ const BookCategoryPage = () => {
   const [catname, setCatname] = useState("");
   const [categoryList, setCategoryList] = useState(null);
   const [messageApi, contextHolder] = message.useMessage();
-  const [selectionType, setSelectionType] = useState('checkbox');
+  const [selectionType, setSelectionType] = useState("checkbox");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [editingKey, setEditingKey] = useState('');
+  const [editingKey, setEditingKey] = useState("");
   const isEditing = (record) => record._id === editingKey;
   const [form] = Form.useForm();
   const { confirm } = Modal;
@@ -61,8 +71,7 @@ const BookCategoryPage = () => {
       dataIndex: "name",
       key: "name",
       align: "center",
-      editable:true,
-
+      editable: true,
     },
     {
       title: "Action",
@@ -87,7 +96,10 @@ const BookCategoryPage = () => {
           </span>
         ) : (
           <span className="flex gap-4 justify-center items-center">
-            <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+            <Typography.Link
+              disabled={editingKey !== ""}
+              onClick={() => edit(record)}
+            >
               Edit
             </Typography.Link>
             <Typography.Link onClick={() => showConfirm(record._id)}>
@@ -107,7 +119,7 @@ const BookCategoryPage = () => {
       ...col,
       onCell: (record) => ({
         record,
-        inputType: 'text',
+        inputType: "text",
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -123,19 +135,18 @@ const BookCategoryPage = () => {
   };
 
   const cancel = () => {
-    setEditingKey('');
+    setEditingKey("");
   };
 
   const save = async (key) => {
-    const newValue = form.getFieldValue('name');
-    if(newValue == "" || !newValue)
-      return ;
-    else{
+    const newValue = form.getFieldValue("name");
+    if (newValue == "" || !newValue) return;
+    else {
       let str = newValue.trim();
       str = str.charAt(0).toUpperCase() + str.slice(1);
-      handleUpdateCategory(key,str);
+      handleUpdateCategory(key, str);
     }
-    setEditingKey('');
+    setEditingKey("");
   };
 
   const handleAddCategory = async () => {
@@ -143,18 +154,20 @@ const BookCategoryPage = () => {
     str = str.charAt(0).toUpperCase() + str.slice(1);
     const res = await addcategory(str);
     if (res) {
-        console.log(res)
-      if(res.status == 201) messageApi.success(res.data.Data);
-      else message.error(res.data.Data);
+      //console.log(res)
+      if (res.status == 201) {
+        setCatname("");
+        messageApi.success(res.data.Data);
+      } else message.error(res.data.Data);
       handleGetCategory();
     }
   };
 
-  const handleUpdateCategory = async (id,newName) => {
-    const res = await updatecategory(id,newName);
+  const handleUpdateCategory = async (id, newName) => {
+    const res = await updatecategory(id, newName);
     if (res) {
-        console.log(res)
-      if(res.status == 201) messageApi.success(res.data.Data);
+      console.log(res);
+      if (res.status == 201) messageApi.success(res.data.Data);
       else message.error(res.data.Data);
       handleGetCategory();
     }
@@ -162,11 +175,11 @@ const BookCategoryPage = () => {
 
   const handleDeleteCategory = async (id) => {
     messageApi.open({
-      type: 'loading',
-      content: 'Deleting Category..',
+      type: "loading",
+      content: "Deleting Category..",
       duration: 0,
     });
-    if(Array.isArray(id)){
+    if (Array.isArray(id)) {
       let count = 0;
       id.forEach(async (el) => {
         const res = await deletecategory(el);
@@ -174,11 +187,11 @@ const BookCategoryPage = () => {
           count++;
         }
         messageApi.destroy();
-        if(count == id.length){
-          messageApi.success("Categories deleted")
+        if (count == id.length) {
+          messageApi.success("Categories deleted");
           handleGetCategory();
         } else {
-          messageApi.error("Some Category are not deleted")
+          messageApi.error("Some Category are not deleted");
         }
       });
       messageApi.destroy();
@@ -187,33 +200,39 @@ const BookCategoryPage = () => {
       messageApi.destroy();
       if (res) {
         console.log(res.data.Data);
-        messageApi.success(res.data.Data)
-        handleGetAllBooks();
+        messageApi.success(res.data.Data);
+        handleGetCategory();
       }
     }
   };
 
   const handleGetCategory = async () => {
+    messageApi.open({
+      type: "loading",
+      content: "Loading Categories..",
+      duration: 0,
+    });
     const res = await getcategory();
+    messageApi.destroy();
     if (res) {
       setCategoryList(res.data.Data);
     }
   };
 
   const showConfirm = (id) => {
-    if(!id || id == '' || id.length == 0){
+    if (!id || id == "" || id.length == 0) {
       messageApi.info("Please select category to delete");
-      return ;
+      return;
     }
     confirm({
-      title: 'Delete Category',
+      title: "Delete Category",
       icon: <ExclamationCircleFilled />,
-      content: 'Do you want to delete this category?',
+      content: "Do you want to delete this category?",
       onOk() {
         handleDeleteCategory(id);
       },
       onCancel() {
-        console.log('Cancel deletion');
+        console.log("Cancel deletion");
       },
     });
   };
@@ -237,15 +256,22 @@ const BookCategoryPage = () => {
       <div className="bg-white flex font-bold text-2xl p-4 border-b-[1px] justify-between sticky top-0 z-50">
         Manage E-Books Categories
         <div className="flex gap-2 font-medium">
-        <Button shape="circle" onClick={handleGetCategory}><MdRefresh/></Button>
-        <Button shape="circle" onClick={()=>handleDeleteCategory(selectedRowKeys)}><FaTrashCan/></Button>
+          <Button shape="circle" onClick={handleGetCategory}>
+            <MdRefresh />
+          </Button>
+          <Button
+            shape="circle"
+            onClick={() => handleDeleteCategory(selectedRowKeys)}
+          >
+            <FaTrashCan />
+          </Button>
           <Input
             onChange={(e) => setCatname(e.target.value)}
             value={catname}
             placeholder="Enter category name"
             spellCheck={true}
             allowClear
-            variant="filled" 
+            variant="filled"
           />
           <Button type="primary" onClick={handleAddCategory}>
             <FaPlus /> Add Category
@@ -253,25 +279,25 @@ const BookCategoryPage = () => {
         </div>
       </div>
       <div className="p-4">
-      <Form form={form} component={false}>
-        <Table
-          components={{
-            body: {
-              cell: EditableCell,
-            },
-          }}
-          rowSelection={{
-            type: selectionType,
-            ...rowSelection,
-          }}
-          columns={mergedColumns}
-          dataSource={categoryList ? categoryList : null}
-          rowKey="_id"
-          size="small"
-          pagination={{
-            onChange: cancel,
-          }}
-        />
+        <Form form={form} component={false}>
+          <Table
+            components={{
+              body: {
+                cell: EditableCell,
+              },
+            }}
+            rowSelection={{
+              type: selectionType,
+              ...rowSelection,
+            }}
+            columns={mergedColumns}
+            dataSource={categoryList ? categoryList : null}
+            rowKey="_id"
+            size="small"
+            pagination={{
+              onChange: cancel,
+            }}
+          />
         </Form>
       </div>
     </div>

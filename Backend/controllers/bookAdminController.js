@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Book from "../models/bookSchema.js";
-import Category from "../models/categorySchema.js";
 
 // Books CRUD Operation
 const handleAddBook = async (req, res) => {
@@ -93,62 +92,6 @@ const handleGetAllBooks = async (req, res) => {
   }
 };
 
-const handleGetBookDetails = async (req, res) => {
-  const { id } = req.params;
-  if (req.user.role) {
-    try {
-      const foundBook = await Book.findOne({ _id: id }).exec();
-      res.status(200).json({ Result: true, Data: foundBook });
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  } else {
-    res.status(403).json({ Result: false, Data: "Not Authorized" });
-  }
-};
-
-const handleGetLatestBookDetails = async (req, res) => {
-  try {
-    const foundBook = await Book.findOne().sort({ createdAt: -1 }).limit(1).exec();
-    res.status(200).json({ Result: true, Data: foundBook });
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
-
-const handleGetCategoryWiseBooks = async (req, res) => {
-  try {
-    const foundBooks = await Book.aggregate([
-      { $unwind: "$category" },
-      {
-        $lookup: {
-          from: "bookcategories",
-          localField: "category",
-          foreignField: "_id",
-          as: "categoryInfo"
-        }
-      },
-      { $unwind: "$categoryInfo" },
-      {
-        $group: {
-          _id: "$categoryInfo.name",
-          products: { $push: "$$ROOT" }
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          categoryName: "$_id",
-          products: 1
-        }
-      }
-    ]);
-    res.status(200).json({ Result: true, Data: foundBooks });
-  } catch (error) {
-    res.status(500).send(error);
-  }
-}
-
 const handleUpdateBook = async (req, res) => {
   const { id } = req.params;
   const updateData = { ...req.body };
@@ -198,7 +141,7 @@ const handleUpdateBook = async (req, res) => {
       if(updateData.category){
         updateData.category = updateData.category
           .split(",")
-          .map((cat) => new mongoose.Types.ObjectId(cat));
+          .map((cat) => new ObjectId(cat));
       }
 
       const result = await Book.findByIdAndUpdate(id, updateData, {
@@ -218,8 +161,9 @@ const handleUpdateBook = async (req, res) => {
 };
 
 const handleDeleteBook = async (req, res) => {
+  console.log("deletebook")
   if (req.user.role == 1) {
-    const { bookId } = req.body;
+    const { bookId } = req.params;
     if (!bookId || bookId == "")
       return res
         .status(400)
@@ -236,108 +180,9 @@ const handleDeleteBook = async (req, res) => {
   }
 };
 
-// Category CRUD Operation
-const handleAddCategory = async (req, res) => {
-  if (req.user.role) {
-    const { category } = req.body;
-    if (!category || category == "")
-      return res
-        .status(400)
-        .json({ Result: false, Data: "Category name is required" });
-
-    const foundUser = await Category.findOne({ name: category }).exec();
-    if (foundUser)
-      return res
-        .status(403)
-        .json({ Result: false, Data: "Category Already exist" });
-
-    try {
-      const newCategory = {
-        name: category,
-      };
-      const result = await Category.create(newCategory);
-      await result.save();
-
-      console.log(result);
-      res.status(201).json({ Result: true, Data: "New Category Added" });
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  } else {
-    res.status(403).json({ Result: false, Data: "Not Authorized" });
-  }
-};
-
-const handleGetCategory = async (req, res) => {
-  if (req.user.role) {
-    try {
-      const foundCategory = await Category.find().exec();
-      res.status(200).json({ Result: true, Data: foundCategory });
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  } else {
-    res.status(403).json({ Result: false, Data: "Not Authorized" });
-  }
-};
-
-const handleUpdateCategory = async (req, res) => {
-  if (req.user.role == 1) {
-    const { catId, newName } = req.body;
-    if (!newName || newName == "")
-      return res
-        .status(400)
-        .json({ Result: false, Data: "Category name is required" });
-
-    let str = newName.trim();
-    str = str.charAt(0).toUpperCase() + str.slice(1);
-
-    const foundCategory = await Category.findOne({ _id: catId }).exec();
-    if (!foundCategory)
-      return res
-        .status(403)
-        .json({ Result: false, Data: "Category doesm't exist" });
-
-    try {
-      await Category.updateOne({ _id: catId }, { name: newName }).exec();
-      res.status(201).json({ Result: true, Data: "Category Updated" });
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  } else {
-    res.status(403).json({ Result: false, Data: "Not Authorized" });
-  }
-};
-
-const handleDeleteCategory = async (req, res) => {
-  if (req.user.role == 1) {
-    const { catId } = req.body;
-    if (!catId || catId == "")
-      return res
-        .status(400)
-        .json({ Result: false, Data: "Category ID is required" });
-
-    try {
-      await Category.deleteOne({ _id: catId }).exec();
-      res.status(201).json({ Result: true, Data: "Category Deleted" });
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  } else {
-    res.status(403).json({ Result: false, Data: "Not Authorized" });
-  }
-};
-
 export {
   handleAddBook,
   handleGetAllBooks,
-  handleGetBookDetails,
-  handleGetLatestBookDetails,
-  handleGetCategoryWiseBooks,
   handleUpdateBook,
   handleDeleteBook,
-  handleAddCategory,
-  handleGetCategory,
-  handleUpdateCategory,
-  handleDeleteCategory,
 };

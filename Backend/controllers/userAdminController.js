@@ -1,5 +1,3 @@
-import Book from "../models/bookSchema.js";
-import Category from "../models/categorySchema.js";
 import User from "../models/userSchema.js";
 
 const handleGetUserList = async (req, res) => {
@@ -32,24 +30,4 @@ const handleDeleteUser = async (req, res) => {
   }
 };
 
-const handleGetStats = async (req, res) => {
-  const stats = {};
-  if (req.user.role) {
-    try {
-      const foundUser = await User.find().exec();
-      stats.totalUser = foundUser.length;
-      const foundBook = await Book.find().exec();
-      stats.totalBook = foundBook.length;
-      const foundCategory = await Category.find().exec();
-      stats.totalCategory = foundCategory.length;
-      
-      res.status(200).json({ Result: true, Data: stats });
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  } else {
-    res.status(403).json({ Result: false, Data: "Not Authorized" });
-  }
-};
-
-export { handleGetUserList };
+export { handleGetUserList, handleDeleteUser };

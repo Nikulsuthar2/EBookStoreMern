@@ -13,7 +13,7 @@ const verifyJWT = (req, res, next) => {
         (err, decoded) => {
             if (err) console.log(err);
             if (err) return res.sendStatus(403); 
-            //console.log(decoded)// forbidden
+            // console.log(decoded)// forbidden
             req.user = decoded.UserInfo;
             next();
         }

@@ -7,7 +7,7 @@ import {
 
 const addcategory = async (name) => {
   let token = localStorage.getItem("accessToken");
-  console.log(decodeJWT(token));
+  //console.log(decodeJWT(token));
   if (isTokenExpired(token)) refreshAccessToken();
   token = localStorage.getItem("accessToken");
   let res;
@@ -39,7 +39,7 @@ const updatecategory = async (catid, name) => {
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .post(
+    .put(
       import.meta.env.VITE_BACKEND_URL + "admin/updatecategory",
       {
         catId: catid,
@@ -67,11 +67,8 @@ const deletecategory = async (catid) => {
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .post(
-      import.meta.env.VITE_BACKEND_URL + "admin/deletecategory",
-      {
-        catId: catid,
-      },
+    .delete(
+      import.meta.env.VITE_BACKEND_URL + "admin/deletecategory/"+catid,
       {
         headers: {
           Authorization: token,
@@ -127,66 +124,6 @@ const getallbooks = async (name) => {
   return res;
 };
 
-const getBookDetails = async (id) => {
-  let token = localStorage.getItem("accessToken");
-  if (isTokenExpired(token)) refreshAccessToken();
-  token = localStorage.getItem("accessToken");
-  let res;
-  await axios
-    .get(import.meta.env.VITE_BACKEND_URL + "admin/getbookdetails/"+id, {
-      headers: {
-        Authorization: token,
-      },
-    })
-    .then((resp) => {
-      res = resp;
-    })
-    .catch((e) => {
-      res = e.response;
-    });
-  return res;
-}
-
-const getLatestBookDetails = async (id) => {
-  let token = localStorage.getItem("accessToken");
-  if (isTokenExpired(token)) refreshAccessToken();
-  token = localStorage.getItem("accessToken");
-  let res;
-  await axios
-    .get(import.meta.env.VITE_BACKEND_URL + "admin/getlatestbookdetails", {
-      headers: {
-        Authorization: token,
-      },
-    })
-    .then((resp) => {
-      res = resp;
-    })
-    .catch((e) => {
-      res = e.response;
-    });
-  return res;
-}
-
-const getCategoryWiseBooks = async (id) => {
-  let token = localStorage.getItem("accessToken");
-  if (isTokenExpired(token)) refreshAccessToken();
-  token = localStorage.getItem("accessToken");
-  let res;
-  await axios
-    .get(import.meta.env.VITE_BACKEND_URL + "admin/getcategorywisebooks", {
-      headers: {
-        Authorization: token,
-      },
-    })
-    .then((resp) => {
-      res = resp;
-    })
-    .catch((e) => {
-      res = e.response;
-    });
-  return res;
-}
-
 const addBook = async (data) => {
   let token = localStorage.getItem("accessToken");
   if (isTokenExpired(token)) refreshAccessToken();
@@ -213,7 +150,7 @@ const updateBook = async (id,data) => {
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .post(import.meta.env.VITE_BACKEND_URL + "admin/updatebook/"+id, data, {
+    .put(import.meta.env.VITE_BACKEND_URL + "admin/updatebook/"+id, data, {
       headers: {
         Authorization: token,
       },
@@ -233,11 +170,8 @@ const deleteBook = async (bookId) => {
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .post(
-      import.meta.env.VITE_BACKEND_URL + "admin/deletebook",
-      {
-        bookId: bookId,
-      },
+    .delete(
+      import.meta.env.VITE_BACKEND_URL + "admin/deletebook/"+bookId,
       {
         headers: {
           Authorization: token,
@@ -273,6 +207,26 @@ const getallUsers = async (name) => {
   return res;
 };
 
+const getdashboardstats = async (name) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/dashboardstats", {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
 export {
   addcategory,
   deletecategory,
@@ -280,10 +234,8 @@ export {
   getcategory,
   addBook,
   getallbooks,
-  getBookDetails,
-  getLatestBookDetails,
-  getCategoryWiseBooks,
   updateBook,
   deleteBook,
-  getallUsers
+  getallUsers,
+  getdashboardstats
 };

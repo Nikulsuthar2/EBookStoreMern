@@ -10,7 +10,8 @@ import credentials from './middleware/credentials.js';
 import verifyJWT from './middleware/verifyJWT.js';
 import corsOptions from './config/corsConfig.js'
 import userAuthRouter from './routes/userAuthRoute.js';
-import bookAdminRouter from './routes/bookAdminRoute.js';
+import adminRouter from './routes/adminRoute.js';
+import userRouter from './routes/userRoutes.js';
 
 const PORT = process.env.PORT ?? 8080;
 
@@ -38,7 +39,8 @@ app.use("/auth", userAuthRouter);
 
 // custom routes which require JWT Verification
 app.use(verifyJWT);
-app.use("/admin",bookAdminRouter);
+app.use("/admin",adminRouter);
+app.use("/user",userRouter);
 
 
 // Starting Route 

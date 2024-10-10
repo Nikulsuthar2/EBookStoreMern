@@ -1,9 +1,24 @@
-import { ArrowUpOutlined, LikeOutlined } from "@ant-design/icons";
+import { ArrowUpOutlined, BookOutlined, BookTwoTone, GroupOutlined, LikeOutlined, UserOutlined } from "@ant-design/icons";
 import { Card, message, Statistic } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getdashboardstats } from "../Utils/AdminDataApi";
 
 const AdminHomePage = () => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [stats, setStats] = useState(null);
+
+  const handleGetStats = async () => {
+    const res = await getdashboardstats();
+    if (res) {
+      //console.log(res.data);
+      setStats(res.data.Data);
+    }
+  };
+
+  useEffect(() => {
+    handleGetStats();
+  }, []);
+
   return (
     <div className="h-screen w-full overflow-x-hidden overflow-y-auto">
       {contextHolder}
@@ -12,23 +27,37 @@ const AdminHomePage = () => {
       </div>
       <div className="p-4">
         <div className="flex gap-1">
-      <Statistic title="Active Users" value={112893} />
-      <Statistic title="Account Balance (CNY)" value={112893} precision={2} />
-      <Statistic title="Feedback" value={1128} prefix={<LikeOutlined />} />
-      <Statistic title="Unmerged" value={93} suffix="/ 100" />
-      <Card bordered={false}>
-        <Statistic
-          title="Active"
-          value={11.28}
-          precision={2}
-          valueStyle={{
-            color: '#3f8600',
-          }}
-          prefix={<ArrowUpOutlined />}
-          suffix="%"
-        />
-      </Card>
-      </div>
+          <Card size="small">
+            <Statistic
+              title="Total Users"
+              value={stats ? stats.totalUser : 0}
+              prefix={<UserOutlined/>}
+              valueStyle={{
+                color: "#3f8600",
+              }}
+            />
+          </Card>
+          <Card size="small">
+            <Statistic
+              title="Total Books"
+              value={stats ? stats.totalBook : 0}
+              prefix={<BookOutlined/>}
+              valueStyle={{
+                color: "#3f8600",
+              }}
+            />
+          </Card>
+          <Card size="small">
+            <Statistic
+              title="Total Categories"
+              value={stats ? stats.totalCategory : 0}
+              prefix={<GroupOutlined />}
+              valueStyle={{
+                color: "#3f8600",
+              }}
+            />
+          </Card>
+        </div>
       </div>
     </div>
   );
