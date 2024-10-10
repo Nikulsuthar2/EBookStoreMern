@@ -32,7 +32,8 @@ function App() {
       <Route path='/admin' element={<AdminMaster/>}>
         <Route index element={<AdminHomePage/>}/>
         <Route path='/admin/ebooks' element={<BookListPage/>}/>
-        <Route path='/admin/ebooks/addBook' element={<AddBookPage/>}/>
+        <Route path='/admin/ebooks/addBook' element={<AddBookPage title={"Add Book"} isUpdate={false}/>}/>
+        <Route path='/admin/ebooks/updateBook/:id' element={<AddBookPage title={"Update Book"} isUpdate={true}/>}/>
         <Route path='/admin/category' element={<BookCategoryPage/>}/>
         <Route path='/admin/users' element={<UserListPage/>}/>
         <Route path='/admin/purchasereport' element={<PurchaseReport/>}/>

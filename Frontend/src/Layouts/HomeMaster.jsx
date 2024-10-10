@@ -21,7 +21,7 @@ const HomeMaster = () => {
 
   
   return (
-    <div>
+    <div className="h-screen overflow-hidden">
       <div>
         <Navbar />
         <Outlet />

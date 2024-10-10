@@ -205,7 +205,7 @@ const BookListPage = () => {
       fixed: "right",
       render: (_, record) => (
         <Space size="middle">
-          <Button>Edit</Button>
+          <Button onClick={()=> navigate(`/admin/ebooks/updatebook/${record._id}`)}>Edit</Button>
           <Button
             color="danger"
             onClick={() => showConfirm(record._id, record.title)}
