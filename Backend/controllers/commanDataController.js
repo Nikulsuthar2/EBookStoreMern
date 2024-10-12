@@ -25,7 +25,7 @@ const handleGetStats = async (req, res) => {
 
 const handleGetCategoryWiseBooks = async (req, res) => {
   try {
-    const user = await User.findById(req.user).exec();
+    const user = await User.findById(req.user.id).exec();
     if (!user) {
       return res.status(404).json({ Result: false, Message: "User not found" });
     }
@@ -43,31 +43,40 @@ const handleGetCategoryWiseBooks = async (req, res) => {
       { $unwind: "$categoryInfo" },
       {
         $group: {
-          _id: "$categoryInfo.name",
+          _id: { id: "$categoryInfo._id", name: "$categoryInfo.name" },
           products: { $push: "$$ROOT" },
         },
       },
       {
         $project: {
           _id: 0,
-          categoryName: "$_id",
+          categoryId: "$_id.id",
+          categoryName: "$_id.name",
           products: {
-            $map: {
-              input: "$products",
-              as: "book",
-              in: {
-                $mergeObjects: [
-                  "$$book",
-                  {
-                    isInCart: { $in: ["$$book._id", user.cart] },
-                    isInWishlist: { $in: ["$$book._id", user.wishlist] },
-                    isInMybooks: { $in: ["$$book._id", user.mybooks] },
+            $slice: [
+              {
+                $map: {
+                  input: "$products",
+                  as: "book",
+                  in: {
+                    $mergeObjects: [
+                      "$$book",
+                      {
+                        isInCart: { $in: ["$$book._id", user.cart] },
+                        isInWishlist: { $in: ["$$book._id", user.wishlist] },
+                        isInMybooks: { $in: ["$$book._id", user.mybooks] },
+                      },
+                    ],
                   },
-                ],
+                },
               },
-            },
+              10,
+            ],
           },
         },
+      },
+      {
+        $sort: { categoryName: 1 }, // Sort in ascending order by category name
       },
     ]);
     res.status(200).json({ Result: true, Data: foundBooks });
@@ -79,12 +88,14 @@ const handleGetCategoryWiseBooks = async (req, res) => {
 const handleGetBookDetails = async (req, res) => {
   const { id } = req.params;
   try {
-    const foundBook = await Book.findOne({ _id: id }).exec();
+    const foundBook = await Book.findOne({ _id: id })
+      .populate("category")
+      .exec();
     if (!foundBook) {
       return res.status(404).json({ Result: false, Data: "Book not found" });
     }
 
-    const user = await User.findById(req.user).exec();
+    const user = await User.findById(req.user.id).exec();
     if (!user) {
       return res.status(404).json({ Result: false, Data: "User not found" });
     }
@@ -115,7 +126,7 @@ const handleGetLatestBookDetails = async (req, res) => {
       return res.status(404).json({ Result: false, Data: "Book not found" });
     }
 
-    const user = await User.findById(req.user).exec();
+    const user = await User.findById(req.user.id).exec();
     if (!user) {
       return res.status(404).json({ Result: false, Data: "User not found" });
     }
@@ -124,16 +135,15 @@ const handleGetLatestBookDetails = async (req, res) => {
     const isInWishlist = user.wishlist?.includes(foundBook._id);
     const isInMybooks = user.mybooks?.includes(foundBook._id);
 
-    res
-      .status(200)
-      .json({
-        Result: true,
-        Data: foundBook,
-        isInCart,
-        isInWishlist,
-        isInMybooks,
-      });
+    res.status(200).json({
+      Result: true,
+      Data: foundBook,
+      isInCart,
+      isInWishlist,
+      isInMybooks,
+    });
   } catch (error) {
+    console.error(error);
     res.status(500).send(error);
   }
 };
@@ -141,14 +151,14 @@ const handleGetLatestBookDetails = async (req, res) => {
 const handleGetCategoryBooks = async (req, res) => {
   const { catId } = req.params;
   try {
-    const user = await User.findById(userId).exec();
+    const user = await User.findById(req.user.id).exec();
     if (!user) {
-      return res.status(404).json({ Result: false, Message: 'User not found' });
+      return res.status(404).json({ Result: false, Message: "User not found" });
     }
 
     const foundBooks = await Book.find({ category: catId }).exec();
 
-    const booksWithFlags = foundBooks.map(book => ({
+    const booksWithFlags = foundBooks.map((book) => ({
       ...book.toObject(),
       isInCart: user.cart?.includes(book._id),
       isInWishlist: user.wishlist?.includes(book._id),
@@ -162,10 +172,11 @@ const handleGetCategoryBooks = async (req, res) => {
 };
 
 const handleAddToWishlist = async (req, res) => {
+  console.log("Adding to wishlist");
   const { bookId } = req.params;
   try {
     await User.updateOne(
-      { _id: req.user },
+      { _id: req.user.id },
       { $addToSet: { wishlist: bookId } }
     );
     res.status(200).json({ Result: true, Data: "Book Added In Wishlist" });
@@ -177,7 +188,7 @@ const handleAddToWishlist = async (req, res) => {
 const handleRemoveFromWishlist = async (req, res) => {
   const { bookId } = req.params;
   try {
-    await User.updateOne({ _id: req.user }, { $pull: { wishlist: bookId } });
+    await User.updateOne({ _id: req.user.id }, { $pull: { wishlist: bookId } });
     res.status(200).json({ Result: true, Data: "Book Removed From Wishlist" });
   } catch (error) {
     res.status(500).send(error);
@@ -187,8 +198,8 @@ const handleRemoveFromWishlist = async (req, res) => {
 const handleAddToCart = async (req, res) => {
   const { bookId } = req.params;
   try {
-    await User.updateOne({ _id: req.user }, { $addToSet: { cart: bookId } });
-    res.status(200).json({ Result: true, Data: "Book Added TO Cart" });
+    await User.updateOne({ _id: req.user.id }, { $addToSet: { cart: bookId } });
+    res.status(200).json({ Result: true, Data: "Book Added To Cart" });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -197,7 +208,7 @@ const handleAddToCart = async (req, res) => {
 const handleRemoveFromCart = async (req, res) => {
   const { bookId } = req.params;
   try {
-    await User.updateOne({ _id: req.user }, { $pull: { cart: bookId } });
+    await User.updateOne({ _id: req.user.id }, { $pull: { cart: bookId } });
     res.status(200).json({ Result: true, Data: "Book Removed From Cart" });
   } catch (error) {
     res.status(500).send(error);
@@ -207,7 +218,10 @@ const handleRemoveFromCart = async (req, res) => {
 const handleAddToMyBook = async (req, res) => {
   const { bookId } = req.params;
   try {
-    await User.updateOne({ _id: req.user }, { $addToSet: { mybooks: bookId } });
+    await User.updateOne(
+      { _id: req.user.id },
+      { $addToSet: { mybooks: bookId } }
+    );
     res.status(200).json({ Result: true, Data: "Book Added To My Books" });
   } catch (error) {
     res.status(500).send(error);
@@ -216,7 +230,7 @@ const handleAddToMyBook = async (req, res) => {
 
 const handleGetMyDetails = async (req, res) => {
   try {
-    const foundUser = await User.findOne({ _id: req.user });
+    const foundUser = await User.findOne({ _id: req.user.id });
     res.status(200).json({ Result: true, Data: foundUser });
   } catch (error) {
     res.status(500).send(error);
@@ -226,7 +240,10 @@ const handleGetMyDetails = async (req, res) => {
 const handleUpdateMyDetails = async (req, res) => {
   const { name, email } = req.body;
   try {
-    const foundUser = await User.findByIdAndUpdate(req.user, { name, email });
+    const foundUser = await User.findByIdAndUpdate(req.user.id, {
+      name,
+      email,
+    });
     res.status(200).json({ Result: true, Data: "Your data is updated" });
   } catch (error) {
     res.status(500).send(error);
@@ -240,13 +257,29 @@ const handleSearchBook = async (req, res) => {
     return res.status(400).json({ error: "Please provide a query string." });
 
   try {
+    const user = await User.findById(req.user.id).exec();
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
     const books = await Book.find({
       $or: [
         { title: { $regex: query, $options: "i" } },
         { author: { $regex: query, $options: "i" } },
       ],
     });
-    res.status(200).json({ Result: true, Data: books });
+
+    const booksWithUserStatus = books.map(book => {
+      const bookId = book._id;
+      return {
+        ...book._doc,
+        isInCart: user.cart.includes(bookId),
+        isInMybooks: user.mybooks.includes(bookId),
+        isInWishlist: user.wishlist.includes(bookId),
+      };
+    });
+
+    res.status(200).json({ Result: true, Data: booksWithUserStatus });
   } catch (error) {
     res
       .status(500)
@@ -256,7 +289,7 @@ const handleSearchBook = async (req, res) => {
 
 const handleGetMyBooks = async (req, res) => {
   try {
-    const user = await User.findById(req.user).populate("mybooks");
+    const user = await User.findById(req.user.id).populate("mybooks");
 
     if (!user) {
       return res.status(404).json({ error: "User not found." });
@@ -272,7 +305,7 @@ const handleGetMyBooks = async (req, res) => {
 
 const handleGetMyWishlist = async (req, res) => {
   try {
-    const user = await User.findById(req.user).populate("wishlist");
+    const user = await User.findById(req.user.id).populate("wishlist");
 
     if (!user) {
       return res.status(404).json({ error: "User not found." });
@@ -288,13 +321,13 @@ const handleGetMyWishlist = async (req, res) => {
 
 const handleGetMyCart = async (req, res) => {
   try {
-    const user = await User.findById(req.user).populate("cart");
+    const user = await User.findById(req.user.id).populate("cart");
 
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
 
-    res.status(200).json({ Result: true, Data: user.mybooks });
+    res.status(200).json({ Result: true, Data: user.cart });
   } catch (error) {
     res
       .status(500)
@@ -317,10 +350,10 @@ const handlePurchaseBook = async (req, res) => {
       .json({ error: "Each item must include a bookId and a price." });
   }
 
-  if (req.user) {
+  if (req.user.id) {
     try {
       const purchase = new Purchase({
-        userId: req.user,
+        userId: req.user.id,
         items,
         totalAmount,
       });
@@ -328,9 +361,14 @@ const handlePurchaseBook = async (req, res) => {
 
       const bookIds = items.map((item) => item.bookId);
       await User.findByIdAndUpdate(
-        req.user,
+        req.user.id,
         { $addToSet: { mybooks: { $each: bookIds } } },
         { new: true }
+      );
+
+      await User.findByIdAndUpdate(
+        req.user.id,
+        { $set: { cart: [] } },
       );
 
       res.status(201).json({
@@ -338,6 +376,7 @@ const handlePurchaseBook = async (req, res) => {
         Data: "Purchase successful and books added to user library",
       });
     } catch (error) {
+      console.log(error)
       res
         .status(500)
         .json({ error: "An error occurred while processing the purchase." });

@@ -166,7 +166,7 @@ const BookListPage = () => {
       key: "price",
       align: "center",
       render: (text) => (
-        <div className="text-green-400 font-bold flex items-center"><FaRupeeSign/>{text}</div>
+        <div className="text-green-400 font-bold flex items-center">{text == 0 ? "Free" : <><FaRupeeSign/>{text}</>}</div>
       ),
     },
     {

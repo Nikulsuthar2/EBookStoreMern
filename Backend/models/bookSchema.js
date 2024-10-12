@@ -12,7 +12,7 @@ const bookSchema = new Schema({
     price: {type:Number},
     discount: {type:Number, default:0},
     description:{type:String, default:""},
-    category:{type:[Schema.Types.ObjectId],default:[]},
+    category:{type:[Schema.Types.ObjectId], ref:"BookCategory", default:[]},
     thumbnail: {type: String, required: true},
     bookurl: {type: String, required: true},
     createdAt: {type:Date, default:Date.now()}

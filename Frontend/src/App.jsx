@@ -12,6 +12,11 @@ import AddBookPage from './Pages/AddBookPage';
 import BookCategoryPage from './Pages/BookCategoryPage';
 import UserListPage from './Pages/UserListPage';
 import PurchaseReport from './Pages/PurchaseReport';
+import ViewProductDetails from './Pages/ViewProductDetails';
+import ViewCategoryBooks from './Pages/ViewCategoryBooks';
+import ViewSearchResult from './Pages/ViewSearchResult';
+import ViewCartPage from './Pages/ViewCartPage';
+import NotFound from './Pages/NotFound';
 
 
 function App() {
@@ -23,10 +28,16 @@ function App() {
         <Route index element={<Landing/>}></Route>
         <Route path='/login' element={<LoginPage/>}></Route>
         <Route path='/signin' element={<SigninPage/>}></Route>
+        <Route path="*" element={<NotFound />} />
       </Route>
       {/* Users Pages */}
       <Route path='/home' element={<HomeMaster/>}>
         <Route index element={<HomePage/>}/>
+        <Route path='/home/book/:bookId' element={<ViewProductDetails/>}/>
+        <Route path='/home/cart/' element={<ViewCartPage/>}/>
+        <Route path='/home/category/:catId/:catName' element={<ViewCategoryBooks/>}/>
+        <Route path='/home/searchbooks/' element={<ViewSearchResult/>}/>
+        <Route path="*" element={<NotFound navigate={"/home"} />} />
       </Route>
       {/* Admin Pages */}
       <Route path='/admin' element={<AdminMaster/>}>
@@ -37,6 +48,7 @@ function App() {
         <Route path='/admin/category' element={<BookCategoryPage/>}/>
         <Route path='/admin/users' element={<UserListPage/>}/>
         <Route path='/admin/purchasereport' element={<PurchaseReport/>}/>
+        <Route path="*" element={<NotFound navigate={"/admin"} />} />
       </Route>
       </>
     )

@@ -1,35 +1,45 @@
 import { LogoutOutlined, SearchOutlined, ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Input } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { GiWhiteBook } from "react-icons/gi";
 import { logoutUser } from "../Utils/UserAuthApi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 
 const Navbar = () => {
-
+  const [searchbar, setSearchbar] = useState("");
   const navigate = useNavigate();
+
   const handleLogout = async () => {
     const res = await logoutUser();
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userInfo");
     navigate("/login");
   };
+
+  const handleSearch = async () => {
+    console.log("clicked")
+    if(searchbar !== ""){
+      navigate("/home/searchbooks?query="+searchbar);
+      setSearchbar("");
+    }
+  }
+
   return (
-    <nav className="sticky top-0 w-full z-40 bg-white border-b-[1px] flex justify-between items-center backdrop-blur-md">
-      <div className="demo-logo-vertical py-[5px] px-[10px] rounded-lg flex justify-center text-black bg-[#41414110] text-md items-center gap-2 font-bold">
+    <nav className="sticky top-0 w-full z-40 bg-white border-b-[1px] flex justify-between items-center">
+      <Link to={"/home"} className="demo-logo-vertical py-[5px] px-[10px] rounded-lg flex justify-center text-black bg-[#41414110] text-md items-center gap-2 font-bold">
         <GiWhiteBook size={20} color="#3ca3ff" />
         EBookstore
-      </div>
+      </Link>
       <div className="flex gap-1 items-center">
-        <Input type="search" placeholder="Search Book here" className="w-fit" />
-        <Button title="Search" type="primary">
+        <Input type="search" value={searchbar} onChange={(e)=>setSearchbar(e.target.value)} placeholder="Search Book here" className="w-fit" />
+        <Button title="Search" type="primary" onClick={handleSearch}>
           <SearchOutlined />
         </Button>
       </div>
       <div className="flex items-center gap-1">
-        <Button title="Cart" type="text" shape="round" className="p-[15px]">
+        <Button onClick={()=>navigate("/home/cart/")} title="Cart" type="text" shape="round" className="p-[15px]">
           <ShoppingCartOutlined /> Cart
         </Button>
         <Button title="Profile" type="text" shape="round" className="p-[15px]">

@@ -1,23 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import "react-toastify/ReactToastify.css";
-import { Button, Card, Empty, message } from "antd";
-
+import { Empty, message } from "antd";
+import { PulseLoader } from "react-spinners";
 import {
-  BarLoader,
-  BeatLoader,
-  ClipLoader,
-  DotLoader,
-  MoonLoader,
-  PulseLoader,
-} from "react-spinners";
-import {
-  ReadOutlined,
-  ShoppingCartOutlined,
-} from "@ant-design/icons";
-import { BiPurchaseTag } from "react-icons/bi";
-import { SiWish } from "react-icons/si";
-import { getCategoryWiseBooks, getLatestBookDetails } from "../Utils/userDataApi";
+  addToCart,
+  addToWishlist,
+  getCategoryWiseBooks,
+  getLatestBookDetails,
+  removeFromCart,
+  removeFromWishlist,
+} from "../Utils/userDataApi";
+import LatestBookHeader from "../Components/LatestBookHeader";
+import BookCard from "../Components/BookCard";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -28,8 +23,12 @@ const HomePage = () => {
   const handleLatestBook = async () => {
     const res = await getLatestBookDetails();
     if (res) {
-      setLatestBook(res.data.Data);
-      console.log(res.data.Data);
+      const data = res.data.Data;
+      data.isInCart = res.data.isInCart;
+      data.isInMybooks = res.data.isInMybooks;
+      data.isInWishlist = res.data.isInWishlist;
+      setLatestBook(data);
+      console.log(data);
     }
   };
 
@@ -38,6 +37,36 @@ const HomePage = () => {
     if (res) {
       setCategoryWiseBooks(res.data.Data);
       console.log(res.data.Data);
+    }
+  };
+
+  const handleWishlist = async (id, isInWishlist) => {
+    let res;
+    if (isInWishlist) {
+      res = await removeFromWishlist(id);
+    } else {
+      res = await addToWishlist(id);
+    }
+    if (res) {
+      console.log(res.data);
+      messageApi.success(res.data.Data)
+      handleLatestBook();
+      handleCategoryWiseBooks();
+    }
+  };
+
+  const handleCart = async (id, isInCart) => {
+    let res;
+    if (isInCart) {
+      res = await removeFromCart(id);
+    } else {
+      res = await addToCart(id);
+    }
+    if (res) {
+      console.log(res.data);
+      messageApi.success(res.data.Data)
+      handleLatestBook();
+      handleCategoryWiseBooks();
     }
   };
 
@@ -52,44 +81,17 @@ const HomePage = () => {
     <div className="h-screen w-full overflow-x-hidden overflow-y-auto bg-gray-50">
       {contextHolder}
 
+      {/* Latest Book Header */}
       {isLoading ? (
         <div className="h-screen w-full flex justify-center items-center">
           <PulseLoader />
         </div>
       ) : latestBook ? (
-        <div className="flex items-center justify-center gap-10 bg-gray-100 p-[20px]">
-          <img
-            src={import.meta.env.VITE_BACKEND_URL + latestBook.thumbnail}
-            className="aspect-[2/3] w-[180px] shadow-lg rounded-[10px] object-cover"
-          />
-          <div className="flex flex-col gap-2 w-[50%]">
-            <h1 className="font-bold text-red-500">New Arrival!</h1>
-            <span className="font-bold text-4xl">{latestBook.title}</span>
-            {latestBook.price == 0 ? (
-              <span className="font-semibold text-green-500 text-xl">Free</span>
-            ) : (
-              <p className="flex items-center gap-[10px]">
-                <span className="font-semibold text-green-500">
-                  &#8377;
-                  {latestBook.price -
-                    (latestBook.price * latestBook.discount) / 100}
-                </span>
-                <span className="line-through text-gray-600 font-semibold">
-                  &#8377;{latestBook.price}
-                </span>
-                <span className="text-red-400 font-semibold">
-                  {latestBook.discount}%
-                </span>
-              </p>
-            )}
-
-            <span className="line-clamp-3">{latestBook.description}</span>
-            <span className="flex gap-2">
-              <Button><ShoppingCartOutlined /> Add to Cart</Button>
-              <Button><BiPurchaseTag />Buy</Button>
-            </span>
-          </div>
-        </div>
+        <LatestBookHeader
+          latestBook={latestBook}
+          handleWishlist={handleWishlist}
+          handleCart={handleCart}
+        />
       ) : (
         ""
       )}
@@ -97,62 +99,14 @@ const HomePage = () => {
         categoryWiseBooks.map((data, idx) => {
           return (
             <div key={idx} className="flex flex-col px-[100px]">
-              <div className="flex justify-between p-[20px]">
+              <div className="flex justify-between py-[20px]">
                 <span className="font-bold text-2xl">{data.categoryName}</span>
+                <Link className="text-blue-500 text-sm font-semibold" to={"/home/category/"+data.categoryId+"/"+data.categoryName}>View More</Link>
               </div>
-              <div className="px-[20px] flex gap-[20px]">
-                {data.products.map((book) => {
+              <div className="flex gap-[20px]">
+                {data.products.map((book,idx) => {
                   return (
-                    <div
-                      className="flex flex-col gap-1 w-[180px] rounded-[15px]"
-                      key={book._id}
-                    >
-                      <img
-                        title={book.title}
-                        src={import.meta.env.VITE_BACKEND_URL + book.thumbnail}
-                        className="w-[180px] shadow-lg rounded-[10px] aspect-[2/3] object-cover"
-                      />
-                      <span className="whitespace-nowrap overflow-hidden text-ellipsis text-sm">
-                        {book.title}
-                      </span>
-                      {book.price == 0 ? (
-                        <span className="font-semibold text-green-600">
-                          Free
-                        </span>
-                      ) : (
-                        <div className="flex gap-1">
-                          <span className="font-semibold text-green-600">
-                            &#8377;
-                            {book.price - (book.price * book.discount) / 100}
-                          </span>
-                          <span className="line-through text-gray-400 font-semibold">
-                            &#8377;{book.price}
-                          </span>
-                          <span className="text-red-500 font-semibold">
-                            {book.discount}%
-                          </span>
-                        </div>
-                      )}
-                      {book.price == 0 ? (
-                        <div className="flex gap-3 justify-between">
-                          <Button shape="circle">
-                            <SiWish />
-                          </Button>
-                          <Button className="w-full">
-                            <ReadOutlined /> Read
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="flex gap-2 justify-between">
-                          <Button shape="circle">
-                            <ShoppingCartOutlined />
-                          </Button>
-                          <Button className="w-full">
-                            <BiPurchaseTag /> Buy
-                          </Button>
-                        </div>
-                      )}
-                    </div>
+                    <BookCard key={idx} book={book} handleWishlist={handleWishlist} handleCart={handleCart} />
                   );
                 })}
               </div>
