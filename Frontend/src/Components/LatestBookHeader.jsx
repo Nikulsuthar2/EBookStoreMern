@@ -6,19 +6,19 @@ import { MdAddShoppingCart, MdRemoveShoppingCart } from "react-icons/md";
 import { TbHeart, TbHeartFilled } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
 
-const LatestBookHeader = ({ latestBook, handleWishlist, handleCart }) => {
+const LatestBookHeader = ({ latestBook, handleWishlist, handleCart, handleAddMyBook }) => {
   const navigate = useNavigate();
   return (
-    <div className="flex items-center justify-center gap-10 bg-gray-100 p-[20px]">
+    <div className="flex flex-col md:flex-row items-center md:justify-center gap-10 bg-[#0051ff29] p-4 md:p-[20px] lg:p-[20px]">
       <Link className="flex-none" to={"/home/book/" + latestBook._id}>
         <img
           src={import.meta.env.VITE_BACKEND_URL + latestBook.thumbnail}
-          className="aspect-[2/3] w-[180px] shadow-lg rounded-[10px] object-cover"
+          className="aspect-[2/3] w-[200px] shadow-lg rounded-[10px] object-cover"
         />
       </Link>
       <div className="flex flex-col gap-2 md:w-[50%]">
-        <h1 className="font-bold text-red-500">New Arrival!</h1>
-        <span className="font-bold text-4xl">{latestBook.title}</span>
+        <h1 className="font-bold text-red-500 text-xl">New Arrival!</h1>
+        <span className="font-bold text-5xl">{latestBook.title}</span>
         {latestBook.price == 0 ? (
           <span className="font-semibold text-green-500 text-xl">Free</span>
         ) : (
@@ -42,7 +42,7 @@ const LatestBookHeader = ({ latestBook, handleWishlist, handleCart }) => {
           {latestBook.price == 0 ? (
             <>
               {!latestBook.isInMybooks ? (
-                <Button>
+                <Button onClick={()=>handleAddMyBook(latestBook._id)}>
                   <MdAddShoppingCart /> Add to My Books
                 </Button>
               ) : (

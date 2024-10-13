@@ -17,6 +17,8 @@ import ViewCategoryBooks from './Pages/ViewCategoryBooks';
 import ViewSearchResult from './Pages/ViewSearchResult';
 import ViewCartPage from './Pages/ViewCartPage';
 import NotFound from './Pages/NotFound';
+import UserProfilePage from './Pages/UserProfilePage';
+import PaymentSuccessPage from './Pages/PaymentSuccessPage';
 
 
 function App() {
@@ -37,6 +39,7 @@ function App() {
         <Route path='/home/cart/' element={<ViewCartPage/>}/>
         <Route path='/home/category/:catId/:catName' element={<ViewCategoryBooks/>}/>
         <Route path='/home/searchbooks/' element={<ViewSearchResult/>}/>
+        <Route path='/home/profile/' element={<UserProfilePage/>}/>
         <Route path="*" element={<NotFound navigate={"/home"} />} />
       </Route>
       {/* Admin Pages */}
@@ -50,6 +53,7 @@ function App() {
         <Route path='/admin/purchasereport' element={<PurchaseReport/>}/>
         <Route path="*" element={<NotFound navigate={"/admin"} />} />
       </Route>
+      <Route path='/paymentsuccess/:id/:amount' element={<PaymentSuccessPage/>}/>
       </>
     )
   )

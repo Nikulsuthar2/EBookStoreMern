@@ -3,11 +3,20 @@ import { Button } from "antd";
 import React from "react";
 import { BiPurchaseTag, BiSolidBookAdd } from "react-icons/bi";
 import { MdAddShoppingCart, MdRemoveShoppingCart } from "react-icons/md";
-import { SiWish } from "react-icons/si";
 import { TbHeart, TbHeartFilled } from "react-icons/tb";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const BookCard = ({ book, handleWishlist, handleCart }) => {
+const BookCard = ({ book, handleWishlist, handleCart, handleAddMyBook }) => {
+  const navigate = useNavigate();
+  const handleBuy = async () => {
+    await handleCart(book._id, false);
+    navigate("/home/cart/");
+  };
+
+  const handleRead = (bookurl) => {
+    window.open(import.meta.env.VITE_BACKEND_URL + bookurl, "_blank");
+  };
+
   return (
     <div
       className="relative flex-none flex flex-col gap-1 w-[180px] rounded-[15px]"
@@ -39,9 +48,13 @@ const BookCard = ({ book, handleWishlist, handleCart }) => {
       )}
       {book.price == 0 ? (
         <div className="flex gap-3 justify-between">
-          <Button shape="circle">
-            <BiSolidBookAdd />
-          </Button>
+          {!book.isInMybooks ? (
+            <Button shape="circle" onClick={() => handleAddMyBook(book._id)}>
+              <BiSolidBookAdd />
+            </Button>
+          ) : (
+            ""
+          )}
           <Button className="w-full">
             <a
               href={import.meta.env.VITE_BACKEND_URL + book.bookurl}
@@ -52,13 +65,8 @@ const BookCard = ({ book, handleWishlist, handleCart }) => {
           </Button>
         </div>
       ) : book.isInMybooks ? (
-        <Button className="w-full">
-          <a
-            href={import.meta.env.VITE_BACKEND_URL + book.bookurl}
-            target="_blank"
-          >
-            <ReadOutlined /> Read
-          </a>
+        <Button className="w-full" onClick={() => handleRead(book.bookurl)}>
+          <ReadOutlined /> Read
         </Button>
       ) : (
         <>
@@ -70,7 +78,7 @@ const BookCard = ({ book, handleWishlist, handleCart }) => {
             >
               {book.isInCart ? <MdRemoveShoppingCart /> : <MdAddShoppingCart />}
             </Button>
-            <Button className="w-full">
+            <Button className="w-full" onClick={handleBuy}>
               <BiPurchaseTag /> Buy
             </Button>
           </div>

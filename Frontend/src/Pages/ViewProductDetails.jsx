@@ -67,7 +67,7 @@ const ViewProductDetails = () => {
   }, []);
 
   return (
-    <div className="h-full flex gap-4 box-border px-0 md:px-24">
+    <div className="h-full flex flex-row gap-4 box-border px-0 md:px-24">
         {contextHolder}
       <div className="h-[100%] p-4 pb-[71px] md:flex-none">
         <img
@@ -83,7 +83,7 @@ const ViewProductDetails = () => {
         <div className="flex flex-wrap gap-2">
           {bookData?.category.map((data, idx) => (
             <Link
-              to={"/home/category/"+data._id}
+              to={"/home/category/"+data._id+"/"+data.name}
               className="text-blue-500 font-bold text-sm bg-slate-100 py-0 px-2 rounded-md"
               key={idx}
             >

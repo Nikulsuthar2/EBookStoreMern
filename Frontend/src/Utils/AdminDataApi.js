@@ -104,7 +104,7 @@ const getcategory = async (name) => {
   return res;
 };
 
-const getallbooks = async (name) => {
+const getallbooks = async () => {
   let token = localStorage.getItem("accessToken");
   if (isTokenExpired(token)) refreshAccessToken();
   token = localStorage.getItem("accessToken");
@@ -187,7 +187,7 @@ const deleteBook = async (bookId) => {
   return res;
 };
 
-const getallUsers = async (name) => {
+const getallUsers = async () => {
   let token = localStorage.getItem("accessToken");
   if (isTokenExpired(token)) refreshAccessToken();
   token = localStorage.getItem("accessToken");
@@ -227,6 +227,127 @@ const getdashboardstats = async (name) => {
   return res;
 };
 
+const getallPurchase = async () => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/allpurchase", {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
+const getMonthlyPurchase = async (year, month) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/monthypurchase/"+year+"/"+month, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
+const getYearlyPurchase = async (year) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/yearlypurchase/"+year, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
+const getBookWisePurchase = async () => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/bookwisepurchase/", {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
+const getBookWiseMonthlyPurchase = async (year, month) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/bookwisemonthypurchase/"+year+"/"+month, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
+const getBookWiseYearlyPurchase = async (year) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/bookwiseyearlypurchase/"+year, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
+
 export {
   addcategory,
   deletecategory,
@@ -237,5 +358,11 @@ export {
   updateBook,
   deleteBook,
   getallUsers,
-  getdashboardstats
+  getdashboardstats,
+  getallPurchase,
+  getMonthlyPurchase,
+  getYearlyPurchase,
+  getBookWisePurchase,
+  getBookWiseMonthlyPurchase,
+  getBookWiseYearlyPurchase,
 };

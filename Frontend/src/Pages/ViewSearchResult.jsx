@@ -1,7 +1,13 @@
-import { Button, message } from "antd";
+import { Button, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { addToCart, addToWishlist, getBookSearchResult, removeFromCart, removeFromWishlist } from "../Utils/userDataApi";
+import {
+  addToCart,
+  addToWishlist,
+  getBookSearchResult,
+  removeFromCart,
+  removeFromWishlist,
+} from "../Utils/userDataApi";
 import { FaArrowLeft } from "react-icons/fa6";
 import BookCard from "../Components/BookCard";
 
@@ -53,7 +59,7 @@ const ViewSearchResult = () => {
     if (query && query != "") {
       handleGetSearchResult(query);
     }
-  }, []);
+  }, [query]);
 
   return (
     <div className="px-24 h-full bg-slate-50 overflow-auto">
@@ -69,9 +75,9 @@ const ViewSearchResult = () => {
         </Button>
         <p className="font-bold text-3xl">Search for "{query}"</p>
       </div>
-      <div className="flex flex-wrap gap-[40px] mb-[70px]">
-        {bookData &&
-          bookData.map((data, idx) => {
+      {bookData && bookData.length > 0 ? (
+        <div className="flex flex-wrap gap-[40px] mb-[70px]">
+          {bookData.map((data, idx) => {
             return (
               <BookCard
                 key={idx}
@@ -81,7 +87,12 @@ const ViewSearchResult = () => {
               />
             );
           })}
-      </div>
+        </div>
+      ) : (
+        <div className="w-full h-[60%] flex justify-center items-center">
+          <Empty />
+        </div>
+      )}
     </div>
   );
 };

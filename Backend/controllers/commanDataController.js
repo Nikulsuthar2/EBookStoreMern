@@ -13,6 +13,22 @@ const handleGetStats = async (req, res) => {
       stats.totalBook = foundBook.length;
       const foundCategory = await Category.find().exec();
       stats.totalCategory = foundCategory.length;
+      const totalEarnings = await Purchase.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalEarnings: { $sum: '$totalAmount' },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            totalEarnings: 1,
+          },
+        },
+      ]);
+  
+      stats.totalEarnings = totalEarnings[0]?.totalEarnings || 0;
 
       res.status(200).json({ Result: true, Data: stats });
     } catch (error) {
@@ -230,8 +246,21 @@ const handleAddToMyBook = async (req, res) => {
 
 const handleGetMyDetails = async (req, res) => {
   try {
-    const foundUser = await User.findOne({ _id: req.user.id });
-    res.status(200).json({ Result: true, Data: foundUser });
+    const foundUser = await User.findOne({ _id: req.user.id }).populate(['mybooks', 'wishlist']).exec();
+    // Convert mybooks to a Set for quick lookup
+    const myBooksSet = new Set(foundUser.mybooks.map(book => book._id.toString()));
+    const cartSet = new Set(foundUser.cart.map(book => book._id.toString()));
+
+    // Add isInCart and isInMyBook fields to each book in the wishlist
+    const enhancedWishlist = foundUser.wishlist.map(book => {
+      return {
+        ...book.toObject(),
+        isInCart: cartSet.has(book._id.toString()),
+        isInMyBook: myBooksSet.has(book._id.toString()),
+        isInWishlist: true,
+      };
+    });
+    res.status(200).json({ Result: true, Data: { ...foundUser.toObject(), wishlist: enhancedWishlist } });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -357,7 +386,7 @@ const handlePurchaseBook = async (req, res) => {
         items,
         totalAmount,
       });
-      await purchase.save();
+      const result = await purchase.save();
 
       const bookIds = items.map((item) => item.bookId);
       await User.findByIdAndUpdate(
@@ -374,6 +403,7 @@ const handlePurchaseBook = async (req, res) => {
       res.status(201).json({
         Result: true,
         Data: "Purchase successful and books added to user library",
+        OrderId: result._id
       });
     } catch (error) {
       console.log(error)
@@ -387,6 +417,22 @@ const handlePurchaseBook = async (req, res) => {
       .json({ Result: false, Data: "User Not Found Please Login" });
   }
 };
+
+const handleGetMyPurchaseData = async (req, res) => {
+  try {
+    const purchase = await Purchase.find({userId:req.user.id}).sort({paymentDate:-1}).populate("items.bookId").exec();
+
+    if (!purchase) {
+      return res.status(404).json({ error: "No Purchase found." });
+    }
+
+    res.status(200).json({ Result: true, Data: purchase });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching the purchase." });
+  }
+}
 
 export {
   handleGetCategoryWiseBooks,
@@ -406,4 +452,5 @@ export {
   handleGetMyWishlist,
   handleGetMyCart,
   handlePurchaseBook,
+  handleGetMyPurchaseData,
 };

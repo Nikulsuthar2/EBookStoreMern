@@ -1,7 +1,8 @@
-import { ArrowUpOutlined, BookOutlined, BookTwoTone, GroupOutlined, LikeOutlined, UserOutlined } from "@ant-design/icons";
+import { ArrowUpOutlined, BookOutlined, BookTwoTone, DollarOutlined, GroupOutlined, LikeOutlined, UserOutlined } from "@ant-design/icons";
 import { Card, message, Statistic } from "antd";
 import React, { useEffect, useState } from "react";
 import { getdashboardstats } from "../Utils/AdminDataApi";
+import { FaIndianRupeeSign, FaRupeeSign } from "react-icons/fa6";
 
 const AdminHomePage = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -10,7 +11,7 @@ const AdminHomePage = () => {
   const handleGetStats = async () => {
     const res = await getdashboardstats();
     if (res) {
-      //console.log(res.data);
+      console.log(res.data);
       setStats(res.data.Data);
     }
   };
@@ -27,33 +28,43 @@ const AdminHomePage = () => {
       </div>
       <div className="p-4">
         <div className="flex gap-4">
-          <Card size="small">
+          <Card>
             <Statistic
               title="Total Users"
               value={stats ? stats.totalUser : 0}
               prefix={<UserOutlined/>}
               valueStyle={{
-                color: "#3f8600",
+                color: "#3ca3ff",
               }}
             />
           </Card>
-          <Card size="small">
+          <Card>
             <Statistic
               title="Total Books"
               value={stats ? stats.totalBook : 0}
               prefix={<BookOutlined/>}
               valueStyle={{
-                color: "#3f8600",
+                color: "#3ca3ff",
               }}
             />
           </Card>
-          <Card size="small">
+          <Card>
             <Statistic
               title="Total Categories"
               value={stats ? stats.totalCategory : 0}
               prefix={<GroupOutlined />}
               valueStyle={{
-                color: "#3f8600",
+                color: "#3ca3ff",
+              }}
+            />
+          </Card>
+          <Card>
+            <Statistic
+              title="Total Earnings"
+              value={stats ? stats.totalEarnings : 0}
+              prefix={<DollarOutlined />}
+              valueStyle={{
+                color: "#3ca3ff",
               }}
             />
           </Card>

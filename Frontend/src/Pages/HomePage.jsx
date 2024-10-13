@@ -4,6 +4,7 @@ import { Empty, message } from "antd";
 import { PulseLoader } from "react-spinners";
 import {
   addToCart,
+  addToMyBooks,
   addToWishlist,
   getCategoryWiseBooks,
   getLatestBookDetails,
@@ -70,6 +71,16 @@ const HomePage = () => {
     }
   };
 
+  const handleAddMyBook = async (id) => {
+    const res = await addToMyBooks(id);
+    if(res){
+      console.log(res.data)
+      messageApi.success(res.data.Data)
+      handleLatestBook();
+      handleCategoryWiseBooks();
+    }
+  }
+
   useEffect(() => {
     setIsLoading(true);
     handleLatestBook();
@@ -91,6 +102,7 @@ const HomePage = () => {
           latestBook={latestBook}
           handleWishlist={handleWishlist}
           handleCart={handleCart}
+          handleAddMyBook={handleAddMyBook}
         />
       ) : (
         ""
@@ -98,7 +110,7 @@ const HomePage = () => {
       {categoryWiseBooks ? (
         categoryWiseBooks.map((data, idx) => {
           return (
-            <div key={idx} className="flex flex-col px-[100px]">
+            <div key={idx} className="flex flex-col px-4 md:px-[50px] lg:px-[100px]">
               <div className="flex justify-between py-[20px]">
                 <span className="font-bold text-2xl">{data.categoryName}</span>
                 <Link className="text-blue-500 text-sm font-semibold" to={"/home/category/"+data.categoryId+"/"+data.categoryName}>View More</Link>
@@ -106,7 +118,7 @@ const HomePage = () => {
               <div className="flex gap-[20px]">
                 {data.products.map((book,idx) => {
                   return (
-                    <BookCard key={idx} book={book} handleWishlist={handleWishlist} handleCart={handleCart} />
+                    <BookCard key={idx} book={book} handleWishlist={handleWishlist} handleCart={handleCart} handleAddMyBook={handleAddMyBook} />
                   );
                 })}
               </div>

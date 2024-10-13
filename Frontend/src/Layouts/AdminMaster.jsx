@@ -65,6 +65,8 @@ const AdminMaster = () => {
       setSelectedKeys(["3"]);
     if(href.includes("/admin/users"))
       setSelectedKeys(["4"]);
+    if(href.includes("/admin/purchasereport"))
+      setSelectedKeys(["5"]);
   },[href])
 
   const navigateTo = (key) => {

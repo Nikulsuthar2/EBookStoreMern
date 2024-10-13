@@ -2,6 +2,7 @@ import { Button, Form, Input, message, Modal, Space, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaRupeeSign } from "react-icons/fa6";
 import { getMyCart, purchaseBook, removeFromCart } from "../Utils/userDataApi";
+import { useNavigate } from "react-router-dom";
 
 const ViewCartPage = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -15,6 +16,8 @@ const ViewCartPage = () => {
   const [cname, setCname] = useState("");
   const [cno, setCno] = useState("");
   const [cvv, setCVV] = useState("");
+
+  const navigate = useNavigate();
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -47,8 +50,10 @@ const ViewCartPage = () => {
       const res = await purchaseBook(itemData, netPrice);
       if (res) {
         console.log(res.data);
+        navigate("/paymentsuccess/"+res.data.OrderId+"/"+netPrice)
       }
     }
+    handleGetCartData()
   };
 
   const columns = [
@@ -180,7 +185,7 @@ const ViewCartPage = () => {
         </Button>
         <p className="font-bold text-3xl">My Cart</p>
       </div>
-      <div className="flex flex-col md:flex-col lg:flex-row sm:flex-col gap-[40px] mb-[70px]">
+      <div className="flex flex-col md:flex-col lg:flex-row sm:flex-col gap-[40px] mb-[150px] md:mb-[70px]">
         <Table
           columns={columns}
           dataSource={cartData}

@@ -1,5 +1,5 @@
 import { LogoutOutlined, SearchOutlined, ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Input } from "antd";
+import { Button, Input, Select } from "antd";
 import React, { useState } from "react";
 import { GiWhiteBook } from "react-icons/gi";
 import { logoutUser } from "../Utils/UserAuthApi";
@@ -19,15 +19,18 @@ const Navbar = () => {
   };
 
   const handleSearch = async () => {
-    console.log("clicked")
     if(searchbar !== ""){
       navigate("/home/searchbooks?query="+searchbar);
       setSearchbar("");
     }
   }
 
+  const handleCategoryChange = () => {
+    
+  }
+
   return (
-    <nav className="sticky top-0 w-full z-40 bg-white border-b-[1px] flex justify-between items-center">
+    <nav className="sticky top-0 w-full z-40 bg-white border-b-[1px] gap-2 flex flex-col md:flex-row justify-between items-center">
       <Link to={"/home"} className="demo-logo-vertical py-[5px] px-[10px] rounded-lg flex justify-center text-black bg-[#41414110] text-md items-center gap-2 font-bold">
         <GiWhiteBook size={20} color="#3ca3ff" />
         EBookstore
@@ -42,7 +45,7 @@ const Navbar = () => {
         <Button onClick={()=>navigate("/home/cart/")} title="Cart" type="text" shape="round" className="p-[15px]">
           <ShoppingCartOutlined /> Cart
         </Button>
-        <Button title="Profile" type="text" shape="round" className="p-[15px]">
+        <Button  onClick={()=>navigate("/home/profile/")} title="Profile" type="text" shape="round" className="p-[15px]">
           <UserOutlined /> Profile
         </Button>
         <Button title="Search" onClick={handleLogout} shape="round" className="p-[15px]">

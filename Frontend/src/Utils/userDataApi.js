@@ -85,6 +85,30 @@ const getLatestBookDetails = async (id) => {
   return res;
 };
 
+const addToMyBooks = async (id) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .post(
+      import.meta.env.VITE_BACKEND_URL + "user/addtomybooks/" + id,
+      {},
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    )
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
 const addToWishlist = async (id) => {
   let token = localStorage.getItem("accessToken");
   if (isTokenExpired(token)) refreshAccessToken();
@@ -243,11 +267,79 @@ const purchaseBook = async (items, totalAmount) => {
   return res;
 };
 
+const getMyDetails = async (query) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "user/getmydetails", {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
+const updateMyDetails = async (name, email) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .put(
+      import.meta.env.VITE_BACKEND_URL + "user/updatemydetails/",
+      {
+        name: name,
+        email: email,
+      },
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    )
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
+const getMyPurchaseData = async (query) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "user/mypurchasedata", {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
 export {
   getBookDetails,
   getCategoryBooks,
   getCategoryWiseBooks,
   getLatestBookDetails,
+  addToMyBooks,
   addToWishlist,
   removeFromWishlist,
   addToCart,
@@ -255,4 +347,7 @@ export {
   getBookSearchResult,
   getMyCart,
   purchaseBook,
+  getMyDetails,
+  updateMyDetails,
+  getMyPurchaseData,
 };

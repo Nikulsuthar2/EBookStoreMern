@@ -1,5 +1,5 @@
 import express from 'express'
-import { handleAddToCart, handleAddToMyBook, handleAddToWishlist, handleGetBookDetails, handleGetCategoryBooks, handleGetCategoryWiseBooks, handleGetLatestBookDetails, handleGetMyBooks, handleGetMyCart, handleGetMyDetails, handleGetMyWishlist, handlePurchaseBook, handleRemoveFromCart, handleRemoveFromWishlist, handleSearchBook, handleUpdateMyDetails } from '../controllers/commanDataController.js';
+import { handleAddToCart, handleAddToMyBook, handleAddToWishlist, handleGetBookDetails, handleGetCategoryBooks, handleGetCategoryWiseBooks, handleGetLatestBookDetails, handleGetMyBooks, handleGetMyCart, handleGetMyDetails, handleGetMyPurchaseData, handleGetMyWishlist, handlePurchaseBook, handleRemoveFromCart, handleRemoveFromWishlist, handleSearchBook, handleUpdateMyDetails } from '../controllers/commanDataController.js';
 
 const userRouter = express.Router();
 
@@ -24,5 +24,7 @@ userRouter.put("/updatemydetails", handleUpdateMyDetails);
 
 userRouter.get("/searchbooks", handleSearchBook);
 userRouter.post("/purchasebooks", handlePurchaseBook);
+
+userRouter.get("/mypurchasedata", handleGetMyPurchaseData);
 
 export default userRouter;

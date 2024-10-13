@@ -27,6 +27,9 @@ const handleAddBook = async (req, res) => {
         Data: "Title, author, price, isbn and totalpage are required",
       });
 
+    const bookisbn = await Book.findOne({isbn:isbn}).exec();
+    if(bookisbn) return res.status(204).json({Result:false, Data: "Book with this ISBN already exist"});
+
     try {
       const formatTitle = title
         .toLowerCase()
