@@ -2,6 +2,7 @@ import Book from "../models/bookSchema.js";
 import Category from "../models/categorySchema.js";
 import Purchase from "../models/purchaseSchema.js";
 import User from "../models/userSchema.js";
+import fs from 'fs';
 
 const handleGetStats = async (req, res) => {
   const stats = {};
@@ -231,6 +232,15 @@ const handleRemoveFromCart = async (req, res) => {
   }
 };
 
+const handleClearCart = async (req, res) => {
+  try {
+    await User.updateOne({ _id: req.user.id }, { $set: { cart: [] } });
+    res.status(200).json({ Result: true, Data: "Book Removed From Cart" });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 const handleAddToMyBook = async (req, res) => {
   const { bookId } = req.params;
   try {
@@ -434,6 +444,24 @@ const handleGetMyPurchaseData = async (req, res) => {
   }
 }
 
+const handleBookStream = async (req, res) => {
+  const {bookId} = req.params;
+  console.log("getting book",bookId)
+  try {
+    const book = await Book.findById(bookId);
+    console.log(book)
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+    const pdfPath = book.bookurl;
+    res.setHeader("Content-Type", "application/pdf");
+    fs.createReadStream(pdfPath).pipe(res);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
 export {
   handleGetCategoryWiseBooks,
   handleGetBookDetails,
@@ -444,6 +472,7 @@ export {
   handleRemoveFromWishlist,
   handleAddToCart,
   handleRemoveFromCart,
+  handleClearCart,
   handleAddToMyBook,
   handleGetMyDetails,
   handleUpdateMyDetails,
@@ -453,4 +482,5 @@ export {
   handleGetMyCart,
   handlePurchaseBook,
   handleGetMyPurchaseData,
+  handleBookStream,
 };

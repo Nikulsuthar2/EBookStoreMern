@@ -1,5 +1,5 @@
 import express from 'express'
-import { handleAddToCart, handleAddToMyBook, handleAddToWishlist, handleGetBookDetails, handleGetCategoryBooks, handleGetCategoryWiseBooks, handleGetLatestBookDetails, handleGetMyBooks, handleGetMyCart, handleGetMyDetails, handleGetMyPurchaseData, handleGetMyWishlist, handlePurchaseBook, handleRemoveFromCart, handleRemoveFromWishlist, handleSearchBook, handleUpdateMyDetails } from '../controllers/commanDataController.js';
+import { handleAddToCart, handleAddToMyBook, handleAddToWishlist, handleBookStream, handleClearCart, handleGetBookDetails, handleGetCategoryBooks, handleGetCategoryWiseBooks, handleGetLatestBookDetails, handleGetMyBooks, handleGetMyCart, handleGetMyDetails, handleGetMyPurchaseData, handleGetMyWishlist, handlePurchaseBook, handleRemoveFromCart, handleRemoveFromWishlist, handleSearchBook, handleUpdateMyDetails } from '../controllers/commanDataController.js';
 
 const userRouter = express.Router();
 
@@ -14,6 +14,7 @@ userRouter.get("/mywishlist", handleGetMyWishlist);
 
 userRouter.post("/addtocart/:bookId", handleAddToCart);
 userRouter.delete("/removefromcart/:bookId", handleRemoveFromCart);
+userRouter.delete("/clearcart", handleClearCart);
 userRouter.get("/mycart", handleGetMyCart);
 
 userRouter.post("/addtomybooks/:bookId", handleAddToMyBook);
@@ -26,5 +27,7 @@ userRouter.get("/searchbooks", handleSearchBook);
 userRouter.post("/purchasebooks", handlePurchaseBook);
 
 userRouter.get("/mypurchasedata", handleGetMyPurchaseData);
+
+userRouter.get("/getbookstream/:bookId", handleBookStream);
 
 export default userRouter;

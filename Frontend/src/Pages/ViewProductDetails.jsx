@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
     addToCart,
   addToWishlist,
@@ -20,6 +20,10 @@ const ViewProductDetails = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const { bookId } = useParams();
   const [bookData, setBookData] = useState(null);
+
+  const navigate = useNavigate();
+
+  
 
   const handleGetBookDetails = async (id) => {
     const res = await getBookDetails(id);
@@ -61,6 +65,11 @@ const ViewProductDetails = () => {
     }
   };
 
+  const handleBuy = async () => {
+    await handleCart(bookId, false);
+    navigate("/home/cart/");
+  };
+
 
   useEffect(() => {
     handleGetBookDetails(bookId);
@@ -69,7 +78,7 @@ const ViewProductDetails = () => {
   return (
     <div className="h-full flex flex-row gap-4 box-border px-0 md:px-24">
         {contextHolder}
-      <div className="h-[100%] p-4 pb-[71px] md:flex-none">
+      <div className="md:h-[100%] p-4 pb-[71px] md:flex-none">
         <img
           src={import.meta.env.VITE_BACKEND_URL + bookData?.thumbnail}
           className="md:h-full aspect-[2/3] rounded-xl shadow-lg"
@@ -110,7 +119,7 @@ const ViewProductDetails = () => {
         <span className="flex gap-2">
           <Button type="primary">
             {!bookData?.isInMybooks ? (
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center" onClick={handleBuy}>
                 <BiPurchaseTag /> Buy
               </div>
             ) : (

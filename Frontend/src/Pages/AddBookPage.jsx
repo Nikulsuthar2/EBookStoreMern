@@ -154,7 +154,7 @@ const AddBookPage = ({ title, isUpdate }) => {
   const handleGetBookDetails = async (id) => {
     const res = await getBookDetails(id);
     if (res) {
-      //console.log(res.data.Data);
+      console.log(res.data.Data);
       setBookData(res.data.Data);
       setBooktitle(res.data.Data.title);
       setAuthor(res.data.Data.author);
@@ -165,8 +165,10 @@ const AddBookPage = ({ title, isUpdate }) => {
       setPrice(res.data.Data.price);
       setDiscount(res.data.Data.discount);
       setLanguage(res.data.Data.language);
-      setSelectedItems(res.data.Data.category);
+      setSelectedItems(res.data.Data.category.map(data=> data._id));
       setDesc(res.data.Data.description);
+
+      console.log(selectedItems)
     }
   };
 

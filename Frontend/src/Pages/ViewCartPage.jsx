@@ -1,7 +1,7 @@
 import { Button, Form, Input, message, Modal, Space, Table } from "antd";
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft, FaRupeeSign } from "react-icons/fa6";
-import { getMyCart, purchaseBook, removeFromCart } from "../Utils/userDataApi";
+import { FaArrowLeft, FaRupeeSign, FaTrashCan } from "react-icons/fa6";
+import { clearCart, getMyCart, purchaseBook, removeFromCart } from "../Utils/userDataApi";
 import { useNavigate } from "react-router-dom";
 
 const ViewCartPage = () => {
@@ -50,10 +50,10 @@ const ViewCartPage = () => {
       const res = await purchaseBook(itemData, netPrice);
       if (res) {
         console.log(res.data);
-        navigate("/paymentsuccess/"+res.data.OrderId+"/"+netPrice)
+        navigate("/paymentsuccess/" + res.data.OrderId + "/" + netPrice);
       }
     }
-    handleGetCartData()
+    handleGetCartData();
   };
 
   const columns = [
@@ -137,6 +137,15 @@ const ViewCartPage = () => {
     },
   ];
 
+  const handleClearCart = async () => {
+    const res = await clearCart();
+    if (res) {
+      console.log(res.data);
+      //setCartData(null);
+      handleGetCartData();
+    }
+  };
+
   const handleRemoveFromCart = async (bookid) => {
     const res = await removeFromCart(bookid);
     if (res) {
@@ -174,16 +183,21 @@ const ViewCartPage = () => {
   return (
     <div className="px-4 lg:px-24 md:px-24 h-full bg-slate-50 overflow-auto">
       {contextHolder}
-      <div className="py-4 flex items-center gap-4 mb-2">
-        <Button
-          size="large"
-          shape="round"
-          icon={<FaArrowLeft />}
-          onClick={() => history.back()}
-        >
-          Back
+      <div className="py-4 flex items-center justify-between gap-4 mb-2">
+        <div className="flex gap-4 items-center">
+          <Button
+            size="large"
+            shape="round"
+            icon={<FaArrowLeft />}
+            onClick={() => history.back()}
+          >
+            Back
+          </Button>
+          <p className="font-bold text-3xl">My Cart</p>
+        </div>
+        <Button shape="round" size="large" onClick={handleClearCart}>
+          <FaTrashCan /> Clear Cart
         </Button>
-        <p className="font-bold text-3xl">My Cart</p>
       </div>
       <div className="flex flex-col md:flex-col lg:flex-row sm:flex-col gap-[40px] mb-[150px] md:mb-[70px]">
         <Table
@@ -231,9 +245,13 @@ const ViewCartPage = () => {
               </span>
             </div>
           </div>
-          {cartData?.length > 0 ? <Button type="primary" onClick={showModal}>
-            Checkout
-          </Button> : ""}
+          {cartData?.length > 0 ? (
+            <Button type="primary" onClick={showModal}>
+              Checkout
+            </Button>
+          ) : (
+            ""
+          )}
         </div>
         <Modal
           title="Checkout"

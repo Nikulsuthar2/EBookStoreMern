@@ -13,8 +13,9 @@ const BookCard = ({ book, handleWishlist, handleCart, handleAddMyBook }) => {
     navigate("/home/cart/");
   };
 
-  const handleRead = (bookurl) => {
-    window.open(import.meta.env.VITE_BACKEND_URL + bookurl, "_blank");
+  const handleRead = (bookurl,bookId) => {
+    navigate("/home/readbook/"+bookId)
+    //window.open(import.meta.env.VITE_BACKEND_URL + bookurl, "_blank");
   };
 
   return (
@@ -55,17 +56,12 @@ const BookCard = ({ book, handleWishlist, handleCart, handleAddMyBook }) => {
           ) : (
             ""
           )}
-          <Button className="w-full">
-            <a
-              href={import.meta.env.VITE_BACKEND_URL + book.bookurl}
-              target="_blank"
-            >
-              <ReadOutlined /> Read
-            </a>
+          <Button className="w-full" onClick={() => handleRead(book.bookurl, book._id)}>
+            <ReadOutlined /> Read
           </Button>
         </div>
       ) : book.isInMybooks ? (
-        <Button className="w-full" onClick={() => handleRead(book.bookurl)}>
+        <Button className="w-full" onClick={() => handleRead(book.bookurl, book._id)}>
           <ReadOutlined /> Read
         </Button>
       ) : (

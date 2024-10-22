@@ -19,6 +19,7 @@ import ViewCartPage from './Pages/ViewCartPage';
 import NotFound from './Pages/NotFound';
 import UserProfilePage from './Pages/UserProfilePage';
 import PaymentSuccessPage from './Pages/PaymentSuccessPage';
+import BookReaderPage from './Pages/BookReaderPage';
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
         <Route path='/home/category/:catId/:catName' element={<ViewCategoryBooks/>}/>
         <Route path='/home/searchbooks/' element={<ViewSearchResult/>}/>
         <Route path='/home/profile/' element={<UserProfilePage/>}/>
+        <Route path='/home/readbook/:bookId' element={<BookReaderPage/>}/>
         <Route path="*" element={<NotFound navigate={"/home"} />} />
       </Route>
       {/* Admin Pages */}

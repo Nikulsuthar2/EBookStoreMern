@@ -7,6 +7,13 @@ import { TbHeart, TbHeartFilled } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
 
 const LatestBookHeader = ({ latestBook, handleWishlist, handleCart, handleAddMyBook }) => {
+  const handleBuy = async () => {
+    await handleCart(latestBook._id, false);
+    navigate("/home/cart/");
+  };
+  const handleRead = (bookId) => {
+    navigate("/home/readbook/"+bookId)
+  };
   const navigate = useNavigate();
   return (
     <div className="flex flex-col md:flex-row items-center md:justify-center gap-10 bg-[#0051ff29] p-4 md:p-[20px] lg:p-[20px]">
@@ -48,8 +55,8 @@ const LatestBookHeader = ({ latestBook, handleWishlist, handleCart, handleAddMyB
               ) : (
                 ""
               )}
-              <Button>
-                <a href={import.meta.env.VITE_BACKEND_URL + latestBook.bookurl} target="_blank"><ReadOutlined /> Read</a>
+              <Button onClick={()=> handleRead(latestBook._id)}>
+                <ReadOutlined /> Read
               </Button>
             </>
           ) : (
@@ -69,7 +76,7 @@ const LatestBookHeader = ({ latestBook, handleWishlist, handleCart, handleAddMyB
               </Button>
               <Button>
                 {!latestBook.isInMybooks ? (
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-2 items-center" onClick={handleBuy}>
                     <BiPurchaseTag /> Buy
                   </div>
                 ) : (

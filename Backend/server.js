@@ -32,7 +32,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
 // upload directory for pdfs public access
-app.use("/uploads",express.static(path.join(__dirname,"uploads/")));
+app.use("/uploads", express.static(path.join(__dirname,"uploads/")));
 
 // custom routes
 app.use("/auth", userAuthRouter);

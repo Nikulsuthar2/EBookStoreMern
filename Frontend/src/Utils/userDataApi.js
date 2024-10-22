@@ -200,6 +200,26 @@ const removeFromCart = async (id) => {
   return res;
 };
 
+const clearCart = async () => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .delete(import.meta.env.VITE_BACKEND_URL + "user/clearcart", {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
 const getBookSearchResult = async (query) => {
   let token = localStorage.getItem("accessToken");
   if (isTokenExpired(token)) refreshAccessToken();
@@ -334,6 +354,26 @@ const getMyPurchaseData = async (query) => {
   return res;
 };
 
+const getBookStream = async (bookid) => {
+  let token = localStorage.getItem("accessToken");
+  if (isTokenExpired(token)) refreshAccessToken();
+  token = localStorage.getItem("accessToken");
+  let res;
+  await axios
+    .get(import.meta.env.VITE_BACKEND_URL + "user/getbookstream/"+bookid, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((resp) => {
+      res = resp;
+    })
+    .catch((e) => {
+      res = e.response;
+    });
+  return res;
+};
+
 export {
   getBookDetails,
   getCategoryBooks,
@@ -344,10 +384,12 @@ export {
   removeFromWishlist,
   addToCart,
   removeFromCart,
+  clearCart,
   getBookSearchResult,
   getMyCart,
   purchaseBook,
   getMyDetails,
   updateMyDetails,
   getMyPurchaseData,
+  getBookStream
 };
