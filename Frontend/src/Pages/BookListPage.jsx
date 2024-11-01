@@ -166,7 +166,16 @@ const BookListPage = () => {
       key: "price",
       align: "center",
       render: (text) => (
-        <div className="text-green-400 font-bold flex justify-center items-center">{text == 0 ? "Free" : <><FaRupeeSign/>{text}</>}</div>
+        <div className="text-green-400 font-bold flex justify-center items-center">
+          {text == 0 ? (
+            "Free"
+          ) : (
+            <>
+              <FaRupeeSign />
+              {text}
+            </>
+          )}
+        </div>
       ),
     },
     {
@@ -205,7 +214,11 @@ const BookListPage = () => {
       fixed: "right",
       render: (_, record) => (
         <Space size="middle">
-          <Button onClick={()=> navigate(`/admin/ebooks/updatebook/${record._id}`)}>Edit</Button>
+          <Button
+            onClick={() => navigate(`/admin/ebooks/updatebook/${record._id}`)}
+          >
+            Edit
+          </Button>
           <Button
             color="danger"
             onClick={() => showConfirm(record._id, record.title)}
@@ -243,7 +256,6 @@ const BookListPage = () => {
       const res = await deleteBook(id);
       messageApi.destroy();
       if (res) {
-        console.log(res.data.Data);
         messageApi.success("Book deleted");
         handleGetAllBooks();
       }
@@ -295,7 +307,6 @@ const BookListPage = () => {
     const res = await getallbooks();
     messageApi.destroy();
     if (res) {
-      console.log(res.data.Data);
       setBooklist(res.data.Data);
     }
   };

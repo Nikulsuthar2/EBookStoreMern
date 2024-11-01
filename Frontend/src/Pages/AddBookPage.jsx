@@ -20,11 +20,7 @@ import { InboxOutlined, UploadOutlined, PlusOutlined } from "@ant-design/icons";
 import { MdOutlineCurrencyRupee } from "react-icons/md";
 import { TbRosetteDiscount } from "react-icons/tb";
 import { languages } from "../Utils/data";
-import {
-  addBook,
-  getcategory,
-  updateBook,
-} from "../Utils/AdminDataApi";
+import { addBook, getcategory, updateBook } from "../Utils/AdminDataApi";
 import { getBookDetails } from "../Utils/userDataApi";
 
 const AddBookPage = ({ title, isUpdate }) => {
@@ -54,7 +50,7 @@ const AddBookPage = ({ title, isUpdate }) => {
     if (isUpdate) {
       if (booktitle != "" && booktitle != bookData.title)
         formData.append("title", booktitle);
-      if (author != ""  && author != bookData.author)
+      if (author != "" && author != bookData.author)
         formData.append("author", author);
       if (publisher != "" && publisher != bookData.publisher)
         formData.append("publisher", publisher);
@@ -87,13 +83,12 @@ const AddBookPage = ({ title, isUpdate }) => {
       if (res) {
         if (res.data.Result) {
           messageApi.success(res.data.Data);
-          setTimeout(()=>{
-            navigate("/admin/ebooks")
-          },1000)
+          setTimeout(() => {
+            navigate("/admin/ebooks");
+          }, 1000);
         } else messageApi.error(res.data.Data);
       }
     } else {
-      console.log("adding book")
       if (bookfile.length == 0 || bookthumb.length == 0) {
         messageApi.error("Please upload a book pdf or thumbnail image");
         return;
@@ -107,7 +102,7 @@ const AddBookPage = ({ title, isUpdate }) => {
       formData.append("discount", discount);
       formData.append("language", language);
       formData.append("totalpages", totalpage);
-      console.log(selectedItems)
+      console.log(selectedItems);
       formData.append(
         "category",
         selectedItems.map((data) => data)
@@ -154,7 +149,6 @@ const AddBookPage = ({ title, isUpdate }) => {
   const handleGetBookDetails = async (id) => {
     const res = await getBookDetails(id);
     if (res) {
-      console.log(res.data.Data);
       setBookData(res.data.Data);
       setBooktitle(res.data.Data.title);
       setAuthor(res.data.Data.author);
@@ -165,10 +159,8 @@ const AddBookPage = ({ title, isUpdate }) => {
       setPrice(res.data.Data.price);
       setDiscount(res.data.Data.discount);
       setLanguage(res.data.Data.language);
-      setSelectedItems(res.data.Data.category.map(data=> data._id));
+      setSelectedItems(res.data.Data.category.map((data) => data._id));
       setDesc(res.data.Data.description);
-
-      console.log(selectedItems)
     }
   };
 
@@ -321,64 +313,58 @@ const AddBookPage = ({ title, isUpdate }) => {
             </div>
             <div className="flex md:w-[40%] flex-col gap-2 ">
               <label>Book File</label>
-                <Upload.Dragger
-                  fileList={bookfile}
-                  maxCount={1}
-                  name="bookfile"
-                  height={"150px"}
-                  beforeUpload={(file) => {
-                    if (file.type === "application/pdf") {
-                      setBookfile([file]);
-                      return false;
-                    } else {
-                      message.error(`${file.name} is not a pdf file`);
-                      return Upload.LIST_IGNORE;
-                    }
-                  }}
-                  onRemove={(file) => {
-                    setBookfile([]);
-                  }}
-                >
-                  <p className="ant-upload-drag-icon">
-                    <InboxOutlined />
-                  </p>
-                  <p className="ant-upload-text">
-                    Click or drag file to this area to upload
-                  </p>
-                  <p className="ant-upload-hint">Upload a single pdf file.</p>
-                </Upload.Dragger>
+              <Upload.Dragger
+                fileList={bookfile}
+                maxCount={1}
+                name="bookfile"
+                height={"150px"}
+                beforeUpload={(file) => {
+                  if (file.type === "application/pdf") {
+                    setBookfile([file]);
+                    return false;
+                  } else {
+                    message.error(`${file.name} is not a pdf file`);
+                    return Upload.LIST_IGNORE;
+                  }
+                }}
+                onRemove={(file) => {
+                  setBookfile([]);
+                }}
+              >
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">
+                  Click or drag file to this area to upload
+                </p>
+                <p className="ant-upload-hint">Upload a single pdf file.</p>
+              </Upload.Dragger>
               <label>Book Thumbnail</label>
-                <Upload
-                  fileList={bookthumb}
-                  listType="picture-card"
-                  maxCount={1}
-                  name="bookthumb"
-                  multiple={false}
-                  height={"150px"}
-                  beforeUpload={(file) => {
-                    if (
-                      file.type === "image/png" ||
-                      file.type === "image/jpeg"
-                    ) {
-                      setBookthumb([file]);
-                      return false;
-                    } else {
-                      message.error(`${file.name} is not a png or jpg file`);
-                      return Upload.LIST_IGNORE;
-                    }
-                  }}
-                  onRemove={(file) => {
-                    setBookthumb([]);
-                  }}
-                >
-                  <button
-                    style={{ border: 0, background: "none" }}
-                    type="button"
-                  >
-                    <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </button>
-                </Upload>
+              <Upload
+                fileList={bookthumb}
+                listType="picture-card"
+                maxCount={1}
+                name="bookthumb"
+                multiple={false}
+                height={"150px"}
+                beforeUpload={(file) => {
+                  if (file.type === "image/png" || file.type === "image/jpeg") {
+                    setBookthumb([file]);
+                    return false;
+                  } else {
+                    message.error(`${file.name} is not a png or jpg file`);
+                    return Upload.LIST_IGNORE;
+                  }
+                }}
+                onRemove={(file) => {
+                  setBookthumb([]);
+                }}
+              >
+                <button style={{ border: 0, background: "none" }} type="button">
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </button>
+              </Upload>
             </div>
           </div>
           <div className="flex justify-center">

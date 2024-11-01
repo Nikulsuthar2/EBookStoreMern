@@ -1,8 +1,8 @@
-import { Button, Result } from 'antd'
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { Button, Result } from "antd";
+import React from "react";
+import { Link } from "react-router-dom";
 
-const NotFound = ({navigate}) => {
+const NotFound = ({ navigate }) => {
   return (
     <Result
       status="404"
@@ -14,7 +14,7 @@ const NotFound = ({navigate}) => {
         </Link>
       }
     />
-  )
-}
+  );
+};
 
-export default NotFound
+export default NotFound;

@@ -6,17 +6,22 @@ import { MdAddShoppingCart, MdRemoveShoppingCart } from "react-icons/md";
 import { TbHeart, TbHeartFilled } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
 
-const LatestBookHeader = ({ latestBook, handleWishlist, handleCart, handleAddMyBook }) => {
+const LatestBookHeader = ({
+  latestBook,
+  handleWishlist,
+  handleCart,
+  handleAddMyBook,
+}) => {
   const handleBuy = async () => {
     await handleCart(latestBook._id, false);
     navigate("/home/cart/");
   };
   const handleRead = (bookId) => {
-    navigate("/home/readbook/"+bookId)
+    navigate("/home/readbook/" + bookId);
   };
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col md:flex-row items-center md:justify-center gap-10 bg-[#0051ff29] p-4 md:p-[20px] lg:p-[20px]">
+    <div className="flex flex-col md:flex-row items-center md:justify-center gap-10 bg-[#8d8d8d3b] p-4 md:p-[20px] lg:p-[20px]">
       <Link className="flex-none" to={"/home/book/" + latestBook._id}>
         <img
           src={import.meta.env.VITE_BACKEND_URL + latestBook.thumbnail}
@@ -49,16 +54,20 @@ const LatestBookHeader = ({ latestBook, handleWishlist, handleCart, handleAddMyB
           {latestBook.price == 0 ? (
             <>
               {!latestBook.isInMybooks ? (
-                <Button onClick={()=>handleAddMyBook(latestBook._id)}>
+                <Button onClick={() => handleAddMyBook(latestBook._id)}>
                   <MdAddShoppingCart /> Add to My Books
                 </Button>
               ) : (
                 ""
               )}
-              <Button onClick={()=> handleRead(latestBook._id)}>
+              <Button onClick={() => handleRead(latestBook._id)}>
                 <ReadOutlined /> Read
               </Button>
             </>
+          ) : latestBook.isInMybooks ? (
+            <Button onClick={() => handleRead(latestBook._id)}>
+              <ReadOutlined /> Read
+            </Button>
           ) : (
             <>
               <Button

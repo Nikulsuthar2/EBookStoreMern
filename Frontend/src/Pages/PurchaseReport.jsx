@@ -47,7 +47,6 @@ const PurchaseReport = () => {
     }
     messageApi.destroy();
     if (res) {
-      console.log(res.data.Data);
       setPurchaseData(res.data.Data);
     }
   };
@@ -63,7 +62,7 @@ const PurchaseReport = () => {
       if (type == 1) {
         const year = selectedDate.year();
         const month = selectedDate.month() + 1;
-        console.log(year,month)
+        console.log(year, month);
         res = await getBookWiseMonthlyPurchase(year, month);
       } else if (type == 2) {
         const year = selectedDate.year();
@@ -109,8 +108,12 @@ const PurchaseReport = () => {
             placeholder="Select Month and Year"
             style={{ width: 200 }}
           />
-          <Button type="primary" onClick={()=>refreshData(1)}>Monthly</Button>
-          <Button type="default" onClick={()=>refreshData(2)}>Yearly</Button>
+          <Button type="primary" onClick={() => refreshData(1)}>
+            Monthly
+          </Button>
+          <Button type="default" onClick={() => refreshData(2)}>
+            Yearly
+          </Button>
         </div>
       </div>
       <div className="p-4">

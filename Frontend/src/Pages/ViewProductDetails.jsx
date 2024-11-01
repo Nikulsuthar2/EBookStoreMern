@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
-    addToCart,
+  addToCart,
   addToWishlist,
   getBookDetails,
   removeFromCart,
@@ -13,7 +13,7 @@ import { BiPurchaseTag } from "react-icons/bi";
 import { ReadOutlined } from "@ant-design/icons";
 import { TbHeart, TbHeartFilled } from "react-icons/tb";
 import { message } from "antd";
-import '../assets/scrollbar.css';
+import "../assets/scrollbar.css";
 import { FaArrowLeft } from "react-icons/fa6";
 
 const ViewProductDetails = () => {
@@ -23,8 +23,6 @@ const ViewProductDetails = () => {
 
   const navigate = useNavigate();
 
-  
-
   const handleGetBookDetails = async (id) => {
     const res = await getBookDetails(id);
     if (res) {
@@ -33,7 +31,6 @@ const ViewProductDetails = () => {
       data.isInMybooks = res.data.isInMybooks;
       data.isInWishlist = res.data.isInWishlist;
       setBookData(data);
-      console.log(data);
     }
   };
 
@@ -45,7 +42,6 @@ const ViewProductDetails = () => {
       res = await addToWishlist(id);
     }
     if (res) {
-      console.log(res.data);
       messageApi.success(res.data.Data);
       handleGetBookDetails(bookId);
     }
@@ -59,8 +55,7 @@ const ViewProductDetails = () => {
       res = await addToCart(id);
     }
     if (res) {
-      console.log(res.data);
-      messageApi.success(res.data.Data)
+      messageApi.success(res.data.Data);
       handleGetBookDetails(id);
     }
   };
@@ -70,29 +65,40 @@ const ViewProductDetails = () => {
     navigate("/home/cart/");
   };
 
+  const handleRead = (bookId) => {
+    navigate("/home/readbook/" + bookId);
+  };
 
   useEffect(() => {
     handleGetBookDetails(bookId);
   }, []);
 
   return (
-    <div className="h-full flex flex-row gap-4 box-border px-0 md:px-24">
-        {contextHolder}
-      <div className="md:h-[100%] p-4 pb-[71px] md:flex-none">
+    <div className="h-full flex flex-col md:flex-row gap-4 overflow-auto scrollbar-hide box-border px-0 lg:px-24">
+      {contextHolder}
+      <div className="relative md:sticky md:top-0 h-fit md:h-[100%] p-4 md:pb-[71px] md:flex-none">
         <img
           src={import.meta.env.VITE_BACKEND_URL + bookData?.thumbnail}
           className="md:h-full aspect-[2/3] rounded-xl shadow-lg"
         />
       </div>
-      <div className="p-4 pb-[71px] flex flex-col gap-4 overflow-auto scrollbar-hide">
-      <div className="bg-white flex items-center gap-2 font-bold py-[10px] ">
-        <Button type="default" shape="round" size="small" icon={<FaArrowLeft />} onClick={()=>history.back()}>Back</Button>
-      </div>
+      <div className="h-fit p-4 pb-[130px] md:pb-[71px] flex flex-col gap-4">
+        <div className="bg-white flex items-center gap-2 font-bold py-[10px] ">
+          <Button
+            type="default"
+            shape="round"
+            size="small"
+            icon={<FaArrowLeft />}
+            onClick={() => history.back()}
+          >
+            Back
+          </Button>
+        </div>
         <p className="text-5xl font-bold">{bookData?.title}</p>
         <div className="flex flex-wrap gap-2">
           {bookData?.category.map((data, idx) => (
             <Link
-              to={"/home/category/"+data._id+"/"+data.name}
+              to={"/home/category/" + data._id + "/" + data.name}
               className="text-blue-500 font-bold text-sm bg-slate-100 py-0 px-2 rounded-md"
               key={idx}
             >
@@ -117,80 +123,86 @@ const ViewProductDetails = () => {
           </p>
         )}
         <span className="flex gap-2">
-          <Button type="primary">
-            {!bookData?.isInMybooks ? (
-              <div className="flex gap-2 items-center" onClick={handleBuy}>
+          {bookData?.isInMybooks ? (
+            <Button
+              className="w-full"
+              type="primary"
+              onClick={() => handleRead(bookData?._id)}
+            >
+              <ReadOutlined /> Read
+            </Button>
+          ) : (
+            <>
+              <Button type="primary" onClick={handleBuy}>
                 <BiPurchaseTag /> Buy
-              </div>
-            ) : (
-              <div className="flex gap-2 items-center">
-                <ReadOutlined /> Read
-              </div>
-            )}
-          </Button>
-          <Button onClick={() => handleCart(bookData?._id, bookData?.isInCart)}>
-            {!bookData?.isInCart ? (
-              <div className="flex gap-2 items-center">
-                <MdAddShoppingCart /> Add to Cart
-              </div>
-            ) : (
-              <div className="flex gap-2 items-center">
-                <MdRemoveShoppingCart /> Remove From Cart
-              </div>
-            )}
-          </Button>
-
-          <Button
-            onClick={() =>
-              handleWishlist(bookData?._id, bookData?.isInWishlist)
-            }
-          >
-            {!bookData?.isInWishlist ? (
-              <div className="flex gap-2 items-center">
-                <TbHeart />
-                Add To Wishlist
-              </div>
-            ) : (
-              <div className="flex gap-2 items-center">
-                <TbHeartFilled />
-                Remove From Wishlist
-              </div>
-            )}
-          </Button>
+              </Button>
+              <Button
+                onClick={() => handleCart(bookData?._id, bookData?.isInCart)}
+              >
+                {!bookData?.isInCart ? (
+                  <div className="flex gap-2 items-center">
+                    <MdAddShoppingCart /> Add to Cart
+                  </div>
+                ) : (
+                  <div className="flex gap-2 items-center">
+                    <MdRemoveShoppingCart /> Remove From Cart
+                  </div>
+                )}
+              </Button>
+              <Button
+                onClick={() =>
+                  handleWishlist(bookData?._id, bookData?.isInWishlist)
+                }
+              >
+                {!bookData?.isInWishlist ? (
+                  <div className="flex gap-2 items-center">
+                    <TbHeart />
+                    Add To Wishlist
+                  </div>
+                ) : (
+                  <div className="flex gap-2 items-center">
+                    <TbHeartFilled />
+                    Remove From Wishlist
+                  </div>
+                )}
+              </Button>
+            </>
+          )}
         </span>
         <div className="text-justify">{bookData?.description}</div>
         <h3>Book Details</h3>
         <table className="font-semibold">
-          <tr>
-            <td className="text-gray-500">Author</td>
-            <td>{bookData?.author}</td>
-          </tr>
-          <tr>
-            <td className="text-gray-500">ISBN</td>
-            <td>{bookData?.isbn}</td>
-          </tr>
-          <tr>
-            <td className="text-gray-500">Publisher</td>
-            <td>{bookData?.publisher}</td>
-          </tr>
-          <tr>
-            <td className="text-gray-500">Publish Year</td>
-            <td>{bookData?.publishyear}</td>
-          </tr>
-          <tr>
-            <td className="text-gray-500">Language</td>
-            <td>{bookData?.language}</td>
-          </tr>
-          <tr>
-            <td className="text-gray-500">Total Page</td>
-            <td>{bookData?.totalpages}</td>
-          </tr>
-          <tr>
-            <td className="text-gray-500">Edition</td>
-            <td>{bookData?.edition}</td>
-          </tr>
+          <tbody>
+            <tr>
+              <td className="text-gray-500">Author</td>
+              <td>{bookData?.author}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500">ISBN</td>
+              <td>{bookData?.isbn}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500">Publisher</td>
+              <td>{bookData?.publisher}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500">Publish Year</td>
+              <td>{bookData?.publishyear}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500">Language</td>
+              <td>{bookData?.language}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500">Total Page</td>
+              <td>{bookData?.totalpages}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500">Edition</td>
+              <td>{bookData?.edition}</td>
+            </tr>
+          </tbody>
         </table>
-        
       </div>
     </div>
   );

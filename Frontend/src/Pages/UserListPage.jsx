@@ -145,7 +145,7 @@ const UserListPage = () => {
       dataIndex: "role",
       key: "role",
       align: "center",
-      render: (text) => <div>{text == 1 ? "Admin" : "User"}</div>
+      render: (text) => <div>{text == 1 ? "Admin" : "User"}</div>,
     },
     {
       title: "Total Books",
@@ -159,7 +159,7 @@ const UserListPage = () => {
       dataIndex: "createdAt",
       key: "createdAt",
       align: "center",
-      render: (text) => <div>{formatTimestamp(text).toUpperCase()}</div>
+      render: (text) => <div>{formatTimestamp(text).toUpperCase()}</div>,
     },
   ];
   const handleGetAllUser = async () => {
@@ -171,7 +171,6 @@ const UserListPage = () => {
     const res = await getallUsers();
     messageApi.destroy();
     if (res) {
-      console.log(res.data.Data);
       setUserlist(res.data.Data);
     }
   };

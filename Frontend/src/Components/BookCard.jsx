@@ -13,9 +13,8 @@ const BookCard = ({ book, handleWishlist, handleCart, handleAddMyBook }) => {
     navigate("/home/cart/");
   };
 
-  const handleRead = (bookurl,bookId) => {
-    navigate("/home/readbook/"+bookId)
-    //window.open(import.meta.env.VITE_BACKEND_URL + bookurl, "_blank");
+  const handleRead = (bookId) => {
+    navigate("/home/readbook/" + bookId);
   };
 
   return (
@@ -56,12 +55,18 @@ const BookCard = ({ book, handleWishlist, handleCart, handleAddMyBook }) => {
           ) : (
             ""
           )}
-          <Button className="w-full" onClick={() => handleRead(book.bookurl, book._id)}>
+          <Button
+            className="w-full"
+            onClick={() => handleRead(book._id)}
+          >
             <ReadOutlined /> Read
           </Button>
         </div>
       ) : book.isInMybooks ? (
-        <Button className="w-full" onClick={() => handleRead(book.bookurl, book._id)}>
+        <Button
+          className="w-full"
+          onClick={() => handleRead(book._id)}
+        >
           <ReadOutlined /> Read
         </Button>
       ) : (

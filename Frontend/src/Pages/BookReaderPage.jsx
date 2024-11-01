@@ -1,32 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getBookDetails, getBookStream } from "../Utils/userDataApi";
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
-import 'pdfjs-dist/build/pdf.worker.min.mjs';
-//pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf_viewer.min.css`;
-
+import { Button } from "antd";
+import { FaArrowLeft } from "react-icons/fa6";
+import { Link } from "react-router-dom";
+import PDFViewer from "../Components/PDFViewer";
 
 const BookReaderPage = () => {
-    const canvasRef = useRef(null);
-    const containerRef = useRef(null);
   const { bookId } = useParams();
   const [bookData, setBookData] = useState(null);
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-
-  const loadPdf = async (url) => {
-    console.log(url)
-    const loadingTask = pdfjsLib.getDocument(import.meta.env.VITE_BACKEND_URL+url);
-    loadingTask.promise.then(
-      (pdf) => {
-        setNumPages(pdf.numPages);
-        renderPage(pdf, pageNumber);
-      },
-      (reason) => {
-        console.error('Error loading PDF: ' + reason);
-      }
-    );
-  };
 
   const handleGetBookDetails = async (id) => {
     const res = await getBookDetails(id);
@@ -36,72 +18,123 @@ const BookReaderPage = () => {
       data.isInMybooks = res.data.isInMybooks;
       data.isInWishlist = res.data.isInWishlist;
       setBookData(data);
-      console.log(data);
-      loadPdf(res.data.Data.bookurl)
     }
-  };
-
-  const renderPage = async (pdf, pageNum) => {
-    const page = await pdf.getPage(pageNum);
-    const viewport = page.getViewport({ scale: 1 });
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-
-    const renderContext = {
-      canvasContext: context,
-      viewport: viewport,
-    };
-
-    page.render(renderContext);
-  };
-
-  const handleContextMenu = (event) => {
-    event.preventDefault();
-  };
-  // Change the page and render the new page
-  const changePage = (newPageNumber) => {
-    if (newPageNumber > 0 && newPageNumber <= numPages) {
-      setPageNumber(newPageNumber);
-      loadPage(newPageNumber);
-    }
-  };
-
-  // Load and render a specific page
-  const loadPage = async (pageNum) => {
-    const loadingTask = pdfjsLib.getDocument(import.meta.env.VITE_BACKEND_URL+bookData?.bookurl);
-    const pdf = await loadingTask.promise;
-    renderPage(pdf, pageNum);
   };
 
   useEffect(() => {
     handleGetBookDetails(bookId);
-    if (numPages) {
-      loadPage(pageNumber); // Load the current page whenever the page number changes
-    }
-  }, [pageNumber, numPages]);
+  }, []);
 
   return (
-    <div onContextMenu={handleContextMenu} className="relative h-full pb-[135px] md:pb-[55px] m-auto flex justify-between">
-        <div></div>
-        <canvas ref={canvasRef} />
-        {/* <iframe onMouseDown={()=>alert("he")} onContextMenu={handleContextMenu} type="application/pdf" src={import.meta.env.VITE_BACKEND_URL + bookData?.bookurl+"#toolbar=0"} className="h-full w-[70%]"></iframe> */}
+    <div className="flex-grow px-0 md:px-[50px] lg:px-[100px] overflow-hidden flex justify-between">
+      <div className="hidden w-[30%] overflow-auto py-4 pr-4 scrollbar-hide md:flex md:flex-col gap-2">
         <div>
-        <button
-          onClick={() => setPageNumber(prevPageNumber => Math.max(prevPageNumber - 1, 1))}
-          disabled={pageNumber <= 1}
-        >
-          Previous
-        </button>
-        <span> Page {pageNumber} of {numPages} </span>
-        <button
-          onClick={() => setPageNumber(prevPageNumber => Math.min(prevPageNumber + 1, numPages))}
-          disabled={pageNumber >= numPages}
-        >
-          Next
-        </button>
+          <Button
+            type="default"
+            shape="round"
+            size="small"
+            icon={<FaArrowLeft />}
+            onClick={() => history.back()}
+          >
+            Back
+          </Button>
+        </div>
+        <h1 className="text-2xl font-semibold">
+          {bookData?.title} by {bookData?.author}
+        </h1>
+        <div className="flex flex-wrap gap-2">
+          {bookData?.category.map((data, idx) => (
+            <Link
+              to={"/home/category/" + data._id + "/" + data.name}
+              className="text-blue-500 font-bold text-sm bg-slate-100 py-0 px-2 rounded-md"
+              key={idx}
+            >
+              #{data.name}
+            </Link>
+          ))}
+        </div>
+        <div className="text-justify">{bookData?.description}</div>
+        <div>
+          <div className="w-full border-[1px] rounded-lg overflow-hidden">
+            <div className="flex justify-between border-b-[1px]">
+              <span className="w-[50%] p-2 text-sm font-[600] border-r-[1px] bg-[#fafafa]">
+                Author
+              </span>
+              <span className="w-[50%] p-2 text-sm text-end bg-white">
+                {bookData?.author}
+              </span>
+            </div>
+            <div className="flex justify-between border-b-[1px]">
+              <span className="w-[50%] p-2 text-sm font-[600] border-r-[1px] bg-[#fafafa]">
+                Publisher
+              </span>
+              <span className="w-[50%] p-2 text-sm text-end bg-white">
+                {bookData?.publisher}
+              </span>
+            </div>
+            <div className="flex justify-between border-b-[1px]">
+              <span className="w-[50%] p-2 text-sm font-[600] border-r-[1px] bg-[#fafafa]">
+                Language
+              </span>
+              <span className="w-[50%] p-2 text-sm text-end bg-white">
+                {bookData?.language}
+              </span>
+            </div>
+            <div className="flex justify-between border-b-[1px]">
+              <span className="w-[50%] p-2 text-sm font-[600] border-r-[1px] bg-[#fafafa]">
+                ISBN
+              </span>
+              <span className="w-[50%] p-2 text-sm text-end bg-white">
+                {bookData?.isbn}
+              </span>
+            </div>
+            <div className="flex justify-between border-b-[1px]">
+              <span className="w-[50%] p-2 text-sm font-[600] border-r-[1px] bg-[#fafafa]">
+                Publish Year
+              </span>
+              <span className="w-[50%] p-2 text-sm text-end bg-white">
+                {bookData?.publishyear}
+              </span>
+            </div>
+            <div className="flex justify-between border-b-[1px]">
+              <span className="w-[50%] p-2 text-sm font-[600] border-r-[1px] bg-[#fafafa]">
+                Edition
+              </span>
+              <span className="w-[50%] p-2 text-sm text-end bg-white">
+                {bookData?.edition}
+              </span>
+            </div>
+            <div className="flex justify-between border-b-[1px]">
+              <span className="w-[50%] p-2 text-sm font-[600] border-r-[1px] bg-[#fafafa]">
+                Price
+              </span>
+              <span className="w-[50%] p-2 text-sm text-end bg-white font-bold text-green-500">
+                &#8377;{bookData?.price}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="w-[50%] p-2 text-sm font-[600] border-r-[1px] bg-[#fafafa]">
+                Discount
+              </span>
+              <span className="w-[50%] p-2 text-sm text-end font-bold bg-white text-red-500">
+                {bookData?.discount}%
+              </span>
+            </div>
+          </div>
+        </div>
+        <img
+          className="flex-none w-full aspect-[2/3] rounded-lg"
+          src={import.meta.env.VITE_BACKEND_URL + bookData?.thumbnail}
+        />
+      </div>
+      <div className="w-full h-full overflow-hidden md:w-[70%]">
+        {bookData ? (
+          <PDFViewer
+            pdfUrl={import.meta.env.VITE_BACKEND_URL + bookData?.bookurl}
+          />
+        ) : (
+          "Loading PDF..."
+        )}
       </div>
     </div>
   );

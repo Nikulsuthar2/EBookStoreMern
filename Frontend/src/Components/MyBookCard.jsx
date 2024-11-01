@@ -5,9 +5,11 @@ import { useNavigate } from "react-router-dom";
 
 const MyBookCard = ({ book }) => {
   const navigate = useNavigate();
-  const handleRead = (bookurl) => {
-    window.open(import.meta.env.VITE_BACKEND_URL + bookurl, "_blank");
+
+  const handleRead = (bookId) => {
+    navigate("/home/readbook/" + bookId);
   };
+
   return (
     <div
       className="relative flex-none flex flex-col gap-1 w-[180px] rounded-[15px]"
@@ -17,7 +19,7 @@ const MyBookCard = ({ book }) => {
         title={book.title}
         src={import.meta.env.VITE_BACKEND_URL + book.thumbnail}
         className="w-[180px] shadow-lg rounded-[10px] aspect-[2/3] object-cover cursor-pointer"
-        onClick={() => handleRead(book.bookurl)}
+        onClick={() => handleRead(book._id)}
       />
       <span className="whitespace-nowrap overflow-hidden text-ellipsis text-sm">
         {book.title}

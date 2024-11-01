@@ -1,7 +1,12 @@
 import { Button, Form, Input, message, Modal, Space, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaRupeeSign, FaTrashCan } from "react-icons/fa6";
-import { clearCart, getMyCart, purchaseBook, removeFromCart } from "../Utils/userDataApi";
+import {
+  clearCart,
+  getMyCart,
+  purchaseBook,
+  removeFromCart,
+} from "../Utils/userDataApi";
 import { useNavigate } from "react-router-dom";
 
 const ViewCartPage = () => {
@@ -24,6 +29,18 @@ const ViewCartPage = () => {
   };
 
   const handleOk = () => {
+    if (cname == "" || cno == "" || cvv == "") {
+      alert("Please enter details");
+      return false;
+    }
+    if (cno.length != 16) {
+      alert("Enter Valid Card Number");
+      return false;
+    }
+    if (cvv.length != 3) {
+      alert("Enter Valid CVV");
+      return false;
+    }
     handleCheckout();
     setCname("");
     setCno("");
@@ -49,7 +66,6 @@ const ViewCartPage = () => {
       });
       const res = await purchaseBook(itemData, netPrice);
       if (res) {
-        console.log(res.data);
         navigate("/paymentsuccess/" + res.data.OrderId + "/" + netPrice);
       }
     }
@@ -140,7 +156,6 @@ const ViewCartPage = () => {
   const handleClearCart = async () => {
     const res = await clearCart();
     if (res) {
-      console.log(res.data);
       //setCartData(null);
       handleGetCartData();
     }
@@ -149,7 +164,6 @@ const ViewCartPage = () => {
   const handleRemoveFromCart = async (bookid) => {
     const res = await removeFromCart(bookid);
     if (res) {
-      console.log(res.data);
       setCartData(cartData.filter((data) => data._id != bookid));
       handleGetCartData();
     }
@@ -158,7 +172,6 @@ const ViewCartPage = () => {
   const handleGetCartData = async () => {
     const res = await getMyCart();
     if (res) {
-      console.log(res.data.Data);
       setCartData(res.data.Data);
     }
   };
@@ -181,7 +194,7 @@ const ViewCartPage = () => {
   }, [cartData]);
 
   return (
-    <div className="px-4 lg:px-24 md:px-24 h-full bg-slate-50 overflow-auto">
+    <div className="px-4 lg:px-24 md:px-[50px] h-full bg-slate-50 overflow-auto">
       {contextHolder}
       <div className="py-4 flex items-center justify-between gap-4 mb-2">
         <div className="flex gap-4 items-center">
@@ -202,7 +215,11 @@ const ViewCartPage = () => {
       <div className="flex flex-col md:flex-col lg:flex-row sm:flex-col gap-[40px] mb-[150px] md:mb-[70px]">
         <Table
           columns={columns}
-          dataSource={cartData}
+          dataSource={
+            cartData
+              ? cartData?.map((item) => ({ ...item, key: item._id }))
+              : null
+          }
           size="small"
           bordered
           className="w-full lg:w-[65%] "

@@ -1,4 +1,12 @@
-import { ArrowUpOutlined, BookOutlined, BookTwoTone, DollarOutlined, GroupOutlined, LikeOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  ArrowUpOutlined,
+  BookOutlined,
+  BookTwoTone,
+  DollarOutlined,
+  GroupOutlined,
+  LikeOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { Card, message, Statistic } from "antd";
 import React, { useEffect, useState } from "react";
 import { getdashboardstats } from "../Utils/AdminDataApi";
@@ -11,7 +19,6 @@ const AdminHomePage = () => {
   const handleGetStats = async () => {
     const res = await getdashboardstats();
     if (res) {
-      console.log(res.data);
       setStats(res.data.Data);
     }
   };
@@ -32,7 +39,7 @@ const AdminHomePage = () => {
             <Statistic
               title="Total Users"
               value={stats ? stats.totalUser : 0}
-              prefix={<UserOutlined/>}
+              prefix={<UserOutlined />}
               valueStyle={{
                 color: "#3ca3ff",
               }}
@@ -42,7 +49,7 @@ const AdminHomePage = () => {
             <Statistic
               title="Total Books"
               value={stats ? stats.totalBook : 0}
-              prefix={<BookOutlined/>}
+              prefix={<BookOutlined />}
               valueStyle={{
                 color: "#3ca3ff",
               }}

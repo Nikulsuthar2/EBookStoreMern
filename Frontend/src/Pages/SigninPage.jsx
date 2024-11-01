@@ -23,13 +23,12 @@ const SigninPage = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleSignin = async (e) => {
-    console.log("hello")
     e.preventDefault();
     if (!validate(email)) {
       messageApi.warning("Please enter a valid email address");
       return;
     }
-    if(password.length < 8 || password.length > 16) {
+    if (password.length < 8 || password.length > 16) {
       messageApi.warning("Password length must be between 8 to 16");
       return;
     }
@@ -46,18 +45,17 @@ const SigninPage = () => {
 
     setIsSubmitting(true);
     messageApi.open({
-      type: 'loading',
-      content: 'Creating Account..',
+      type: "loading",
+      content: "Creating Account..",
       duration: 0,
     });
-    // Dismiss manually and asynchronously
+
     const res = await createUser(user);
     setIsSubmitting(false);
     messageApi.destroy();
     if (res.data.Result) {
-      console.log(res);
-      messageApi.success("Account Created")
-      setTimeout(()=>navigate("/login"),1500);
+      messageApi.success("Account Created");
+      setTimeout(() => navigate("/login"), 1500);
     } else {
       messageApi.error(res.data.Data);
     }
@@ -69,23 +67,39 @@ const SigninPage = () => {
     <div className="h-screen">
       {contextHolder}
       <div className="absolute top-0 w-full bg-white flex items-center gap-2 font-bold p-[10px] border-b-[1px] border-b-[#bdbdbd]">
-        <Button type="primary" size="large" icon={<FaArrowLeft />} onClick={()=>navigate("/")}></Button>
-        <span >Back to home</span>
+        <Button
+          type="primary"
+          size="large"
+          icon={<FaArrowLeft />}
+          onClick={() => navigate("/")}
+        ></Button>
+        <span>Back to home</span>
       </div>
       <div className="h-full pt-10 flex justify-center items-center">
         <Form className="flex flex-col min-w-[350px] gap-0 p-[20px] rounded-xl md:shadow-lg">
-          <label className="text-center font-bold text-3xl mb-4">Create Account</label>
+          <label className="text-center font-bold text-3xl mb-4">
+            Create Account
+          </label>
           <label>Name</label>
           <Form.Item
             name="name"
             rules={[
               {
                 required: true,
-                message: 'Please input your name!',
+                message: "Please input your name!",
               },
             ]}
           >
-            <Input type="text" onChange={(e) => setName(e.target.value)} value={name} size="large" variant="filled" placeholder="Enter your name" allowClear required={true} />
+            <Input
+              type="text"
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              size="large"
+              variant="filled"
+              placeholder="Enter your name"
+              allowClear
+              required={true}
+            />
           </Form.Item>
           <label>Email Address</label>
           <Form.Item
@@ -93,15 +107,23 @@ const SigninPage = () => {
             rules={[
               {
                 required: true,
-                message: 'Please input your email!',
+                message: "Please input your email!",
               },
               {
-                pattern:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                message:'Please enter a valid email'
-              }
+                pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: "Please enter a valid email",
+              },
             ]}
           >
-            <Input type="email" onChange={(e) => setEmail(e.target.value)} value={email} size="large" variant="filled" placeholder="Enter your email" allowClear/>
+            <Input
+              type="email"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              size="large"
+              variant="filled"
+              placeholder="Enter your email"
+              allowClear
+            />
           </Form.Item>
           <label>Password</label>
           <Form.Item
@@ -109,16 +131,24 @@ const SigninPage = () => {
             rules={[
               {
                 required: true,
-                message: 'Please input your password!',
+                message: "Please input your password!",
               },
               {
-                type: 'string',
+                type: "string",
                 min: 8,
-                max: 16
+                max: 16,
               },
             ]}
           >
-            <Input.Password onChange={(e) => setPassword(e.target.value)} value={password} size="large" variant="filled" placeholder="Enter your password" allowClear required={true} />
+            <Input.Password
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              size="large"
+              variant="filled"
+              placeholder="Enter your password"
+              allowClear
+              required={true}
+            />
           </Form.Item>
           <label>Confirm Password</label>
           <Form.Item
@@ -126,22 +156,40 @@ const SigninPage = () => {
             rules={[
               {
                 required: true,
-                message: 'Please confirm your password!',
+                message: "Please confirm your password!",
               },
               {
-                type: 'string',
+                type: "string",
                 min: 8,
-                max: 16
+                max: 16,
               },
             ]}
           >
-            <Input.Password onChange={(e) => setCpassword(e.target.value)} value={cpassword} size="large" variant="filled" placeholder="Confirm your password" allowClear required={true} />
+            <Input.Password
+              onChange={(e) => setCpassword(e.target.value)}
+              value={cpassword}
+              size="large"
+              variant="filled"
+              placeholder="Confirm your password"
+              allowClear
+              required={true}
+            />
           </Form.Item>
-          <Button onClick={handleSignin} type="primary" size="large" disabled={isSubmitting}>
+          <Button
+            onClick={handleSignin}
+            type="primary"
+            size="large"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? <PulseLoader color="black" size={10} /> : "Signin"}
           </Button>
           <span className="text-center">
-            <Button htmlType="button" type="link" size="large" onClick={()=>navigate("/login")}>
+            <Button
+              htmlType="button"
+              type="link"
+              size="large"
+              onClick={() => navigate("/login")}
+            >
               Already have an account?
             </Button>
           </span>

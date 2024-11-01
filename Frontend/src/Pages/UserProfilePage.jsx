@@ -7,7 +7,15 @@ import {
 import { Button, Empty, Input, message, Table, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
-import { getMyDetails, getMyPurchaseData, updateMyDetails } from "../Utils/userDataApi";
+import {
+  addToCart,
+  addToWishlist,
+  getMyDetails,
+  getMyPurchaseData,
+  removeFromCart,
+  removeFromWishlist,
+  updateMyDetails,
+} from "../Utils/userDataApi";
 import { validate } from "email-validator";
 import BookCard from "../Components/BookCard";
 import MyBookCard from "../Components/MyBookCard";
@@ -24,6 +32,32 @@ const UserProfilePage = () => {
   const [myWishlistData, setMyWishlistData] = useState(null);
   const [myOrderData, setMyOrderData] = useState(null);
 
+  const handleWishlist = async (id, isInWishlist) => {
+    let res;
+    if (isInWishlist) {
+      res = await removeFromWishlist(id);
+    } else {
+      res = await addToWishlist(id);
+    }
+    if (res) {
+      messageApi.success(res.data.Data);
+      handleGetMyDetails();
+    }
+  };
+
+  const handleCart = async (id, isInCart) => {
+    let res;
+    if (isInCart) {
+      res = await removeFromCart(id);
+    } else {
+      res = await addToCart(id);
+    }
+    if (res) {
+      messageApi.success(res.data.Data);
+      handleGetMyDetails();
+    }
+  };
+
   const items = [
     {
       key: "1",
@@ -34,19 +68,24 @@ const UserProfilePage = () => {
     {
       key: "2",
       label: "Wishlist",
-      children: <MyWishlistTab data={myWishlistData} />,
+      children: (
+        <MyWishlistTab
+          data={myWishlistData}
+          handleWishlist={handleWishlist}
+          handleCart={handleCart}
+        />
+      ),
       icon: <HeartOutlined />,
     },
     {
       key: "3",
       label: "My Orders",
-      children: <MyOrdersTab data={myOrderData}/>,
+      children: <MyOrdersTab data={myOrderData} />,
       icon: <CreditCardOutlined />,
     },
   ];
 
   const handleupdateMyDetails = async () => {
-    console.log(name, email);
     if (name == "" || email == "") {
       messageApi.warning("Both name & email are required");
       return;
@@ -54,7 +93,6 @@ const UserProfilePage = () => {
     if (validate(email)) {
       const res = await updateMyDetails(name, email);
       if (res) {
-        console.log(res.data);
         messageApi.success(res.data.Data);
         setIsEditMode(false);
       }
@@ -66,7 +104,6 @@ const UserProfilePage = () => {
   const handleGetMyDetails = async () => {
     const res = await getMyDetails();
     if (res) {
-      console.log(res.data);
       setName(res.data.Data.name);
       setEmail(res.data.Data.email);
       setUserData(res.data.Data);
@@ -77,11 +114,10 @@ const UserProfilePage = () => {
 
   const handleGetMyPurchaseData = async () => {
     const res = await getMyPurchaseData();
-    if(res){
-        console.log(res.data);
-        setMyOrderData(res.data.Data);
+    if (res) {
+      setMyOrderData(res.data.Data);
     }
-  }
+  };
 
   useEffect(() => {
     handleGetMyDetails();
@@ -190,13 +226,20 @@ const MyBooksTab = ({ data }) => {
   );
 };
 
-const MyWishlistTab = ({ data }) => {
+const MyWishlistTab = ({ data, handleWishlist, handleCart, handleBuy }) => {
   return (
     <>
       {data && data.length > 0 ? (
         <div className="flex gap-4 flex-wrap">
           {data?.map((book, idx) => {
-            return <BookCard key={idx} book={book} />;
+            return (
+              <BookCard
+                key={idx}
+                book={book}
+                handleWishlist={handleWishlist}
+                handleCart={handleCart}
+              />
+            );
           })}
         </div>
       ) : (
@@ -208,7 +251,7 @@ const MyWishlistTab = ({ data }) => {
   );
 };
 
-const MyOrdersTab = ({data}) => {
+const MyOrdersTab = ({ data }) => {
   return (
     <Table
       columns={orderColumns}
@@ -231,11 +274,16 @@ const orderColumns = [
     title: "Items",
     dataIndex: "items",
     key: "items",
-    render: (item, rec) => <div className="flex flex-col gap-2">
-        {item.map((el,idx)=><span key={idx} className="flex gap-1 font-semibold">
-            <span>{idx+1}).</span><span>{el.bookId.title}</span>
-        </span>)}
-    </div>
+    render: (item, rec) => (
+      <div className="flex flex-col gap-2">
+        {item.map((el, idx) => (
+          <span key={idx} className="flex gap-1 font-semibold">
+            <span>{idx + 1}).</span>
+            <span>{el.bookId.title}</span>
+          </span>
+        ))}
+      </div>
+    ),
     // render: (item, rec) => <div className="flex gap-2">
     //     {item.map(el=><img
     //         src={import.meta.env.VITE_BACKEND_URL + el.bookId.thumbnail}
@@ -255,7 +303,11 @@ const orderColumns = [
     dataIndex: "totalAmount",
     key: "totalAmount",
     align: "center",
-    render: (text) => <span className="font-semibold text-red-500 flex items-center justify-center">&#8377;{text}</span>
+    render: (text) => (
+      <span className="font-semibold text-red-500 flex items-center justify-center">
+        &#8377;{text}
+      </span>
+    ),
   },
   {
     title: "Payment Date",

@@ -154,7 +154,6 @@ const BookCategoryPage = () => {
     str = str.charAt(0).toUpperCase() + str.slice(1);
     const res = await addcategory(str);
     if (res) {
-      //console.log(res)
       if (res.status == 201) {
         setCatname("");
         messageApi.success(res.data.Data);
@@ -166,7 +165,6 @@ const BookCategoryPage = () => {
   const handleUpdateCategory = async (id, newName) => {
     const res = await updatecategory(id, newName);
     if (res) {
-      console.log(res);
       if (res.status == 201) messageApi.success(res.data.Data);
       else message.error(res.data.Data);
       handleGetCategory();
@@ -199,7 +197,6 @@ const BookCategoryPage = () => {
       const res = await deletecategory(id);
       messageApi.destroy();
       if (res) {
-        console.log(res.data.Data);
         messageApi.success(res.data.Data);
         handleGetCategory();
       }

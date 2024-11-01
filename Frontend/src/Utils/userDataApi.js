@@ -360,7 +360,7 @@ const getBookStream = async (bookid) => {
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .get(import.meta.env.VITE_BACKEND_URL + "user/getbookstream/"+bookid, {
+    .get(import.meta.env.VITE_BACKEND_URL + "user/getbookstream/" + bookid, {
       headers: {
         Authorization: token,
       },
@@ -391,5 +391,5 @@ export {
   getMyDetails,
   updateMyDetails,
   getMyPurchaseData,
-  getBookStream
+  getBookStream,
 };

@@ -19,10 +19,9 @@ const HomeMaster = () => {
     isLogin();
   }, []);
 
-  
   return (
     <div className="h-screen overflow-hidden">
-      <div className="h-full">
+      <div className="h-full flex flex-col">
         <Navbar />
         <Outlet />
       </div>

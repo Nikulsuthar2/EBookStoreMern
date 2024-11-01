@@ -7,7 +7,6 @@ import {
 
 const addcategory = async (name) => {
   let token = localStorage.getItem("accessToken");
-  //console.log(decodeJWT(token));
   if (isTokenExpired(token)) refreshAccessToken();
   token = localStorage.getItem("accessToken");
   let res;
@@ -34,7 +33,6 @@ const addcategory = async (name) => {
 
 const updatecategory = async (catid, name) => {
   let token = localStorage.getItem("accessToken");
-  console.log(decodeJWT(token));
   if (isTokenExpired(token)) refreshAccessToken();
   token = localStorage.getItem("accessToken");
   let res;
@@ -62,13 +60,12 @@ const updatecategory = async (catid, name) => {
 
 const deletecategory = async (catid) => {
   let token = localStorage.getItem("accessToken");
-  console.log(decodeJWT(token));
   if (isTokenExpired(token)) refreshAccessToken();
   token = localStorage.getItem("accessToken");
   let res;
   await axios
     .delete(
-      import.meta.env.VITE_BACKEND_URL + "admin/deletecategory/"+catid,
+      import.meta.env.VITE_BACKEND_URL + "admin/deletecategory/" + catid,
       {
         headers: {
           Authorization: token,
@@ -144,13 +141,13 @@ const addBook = async (data) => {
   return res;
 };
 
-const updateBook = async (id,data) => {
+const updateBook = async (id, data) => {
   let token = localStorage.getItem("accessToken");
   if (isTokenExpired(token)) refreshAccessToken();
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .put(import.meta.env.VITE_BACKEND_URL + "admin/updatebook/"+id, data, {
+    .put(import.meta.env.VITE_BACKEND_URL + "admin/updatebook/" + id, data, {
       headers: {
         Authorization: token,
       },
@@ -170,14 +167,11 @@ const deleteBook = async (bookId) => {
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .delete(
-      import.meta.env.VITE_BACKEND_URL + "admin/deletebook/"+bookId,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    )
+    .delete(import.meta.env.VITE_BACKEND_URL + "admin/deletebook/" + bookId, {
+      headers: {
+        Authorization: token,
+      },
+    })
     .then((resp) => {
       res = resp;
     })
@@ -253,11 +247,18 @@ const getMonthlyPurchase = async (year, month) => {
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .get(import.meta.env.VITE_BACKEND_URL + "admin/monthypurchase/"+year+"/"+month, {
-      headers: {
-        Authorization: token,
-      },
-    })
+    .get(
+      import.meta.env.VITE_BACKEND_URL +
+        "admin/monthypurchase/" +
+        year +
+        "/" +
+        month,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    )
     .then((resp) => {
       res = resp;
     })
@@ -273,7 +274,7 @@ const getYearlyPurchase = async (year) => {
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .get(import.meta.env.VITE_BACKEND_URL + "admin/yearlypurchase/"+year, {
+    .get(import.meta.env.VITE_BACKEND_URL + "admin/yearlypurchase/" + year, {
       headers: {
         Authorization: token,
       },
@@ -313,11 +314,18 @@ const getBookWiseMonthlyPurchase = async (year, month) => {
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .get(import.meta.env.VITE_BACKEND_URL + "admin/bookwisemonthypurchase/"+year+"/"+month, {
-      headers: {
-        Authorization: token,
-      },
-    })
+    .get(
+      import.meta.env.VITE_BACKEND_URL +
+        "admin/bookwisemonthypurchase/" +
+        year +
+        "/" +
+        month,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    )
     .then((resp) => {
       res = resp;
     })
@@ -333,11 +341,14 @@ const getBookWiseYearlyPurchase = async (year) => {
   token = localStorage.getItem("accessToken");
   let res;
   await axios
-    .get(import.meta.env.VITE_BACKEND_URL + "admin/bookwiseyearlypurchase/"+year, {
-      headers: {
-        Authorization: token,
-      },
-    })
+    .get(
+      import.meta.env.VITE_BACKEND_URL + "admin/bookwiseyearlypurchase/" + year,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    )
     .then((resp) => {
       res = resp;
     })
@@ -346,7 +357,6 @@ const getBookWiseYearlyPurchase = async (year) => {
     });
   return res;
 };
-
 
 export {
   addcategory,

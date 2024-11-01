@@ -29,7 +29,6 @@ const HomePage = () => {
       data.isInMybooks = res.data.isInMybooks;
       data.isInWishlist = res.data.isInWishlist;
       setLatestBook(data);
-      console.log(data);
     }
   };
 
@@ -37,7 +36,6 @@ const HomePage = () => {
     const res = await getCategoryWiseBooks();
     if (res) {
       setCategoryWiseBooks(res.data.Data);
-      console.log(res.data.Data);
     }
   };
 
@@ -49,8 +47,7 @@ const HomePage = () => {
       res = await addToWishlist(id);
     }
     if (res) {
-      console.log(res.data);
-      messageApi.success(res.data.Data)
+      messageApi.success(res.data.Data);
       handleLatestBook();
       handleCategoryWiseBooks();
     }
@@ -64,8 +61,7 @@ const HomePage = () => {
       res = await addToCart(id);
     }
     if (res) {
-      console.log(res.data);
-      messageApi.success(res.data.Data)
+      messageApi.success(res.data.Data);
       handleLatestBook();
       handleCategoryWiseBooks();
     }
@@ -73,13 +69,12 @@ const HomePage = () => {
 
   const handleAddMyBook = async (id) => {
     const res = await addToMyBooks(id);
-    if(res){
-      console.log(res.data)
-      messageApi.success(res.data.Data)
+    if (res) {
+      messageApi.success(res.data.Data);
       handleLatestBook();
       handleCategoryWiseBooks();
     }
-  }
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -89,7 +84,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="h-screen w-full overflow-x-hidden overflow-y-auto bg-gray-50">
+    <div className="h-screen w-full overflow-x-hidden overflow-y-auto pb-[50px] md:pb-0 scrollbar-hide bg-gray-50">
       {contextHolder}
 
       {/* Latest Book Header */}
@@ -110,15 +105,34 @@ const HomePage = () => {
       {categoryWiseBooks ? (
         categoryWiseBooks.map((data, idx) => {
           return (
-            <div key={idx} className="flex flex-col px-4 md:px-[50px] lg:px-[100px]">
-              <div className="flex justify-between py-[20px]">
+            <div
+              key={idx}
+              className="flex flex-col px-4 md:px-[50px] lg:px-[100px]"
+            >
+              <div className="flex justify-between items-center py-[20px]">
                 <span className="font-bold text-2xl">{data.categoryName}</span>
-                <Link className="text-blue-500 text-sm font-semibold" to={"/home/category/"+data.categoryId+"/"+data.categoryName}>View More</Link>
+                <Link
+                  className="text-blue-500 text-sm font-semibold"
+                  to={
+                    "/home/category/" +
+                    data.categoryId +
+                    "/" +
+                    data.categoryName
+                  }
+                >
+                  View More
+                </Link>
               </div>
               <div className="flex gap-[20px]">
-                {data.products.map((book,idx) => {
+                {data.products.map((book, idx) => {
                   return (
-                    <BookCard key={idx} book={book} handleWishlist={handleWishlist} handleCart={handleCart} handleAddMyBook={handleAddMyBook} />
+                    <BookCard
+                      key={idx}
+                      book={book}
+                      handleWishlist={handleWishlist}
+                      handleCart={handleCart}
+                      handleAddMyBook={handleAddMyBook}
+                    />
                   );
                 })}
               </div>

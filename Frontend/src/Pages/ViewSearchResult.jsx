@@ -27,7 +27,6 @@ const ViewSearchResult = () => {
       res = await addToWishlist(id);
     }
     if (res) {
-      console.log(res.data);
       messageApi.success(res.data.Data);
       handleGetSearchResult(query);
     }
@@ -41,7 +40,6 @@ const ViewSearchResult = () => {
       res = await addToCart(id);
     }
     if (res) {
-      console.log(res.data);
       messageApi.success(res.data.Data);
       handleGetSearchResult(query);
     }
@@ -50,7 +48,6 @@ const ViewSearchResult = () => {
   const handleGetSearchResult = async (query) => {
     const res = await getBookSearchResult(query);
     if (res) {
-      console.log(res.data);
       setBookData(res.data.Data);
     }
   };

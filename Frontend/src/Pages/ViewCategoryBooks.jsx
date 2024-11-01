@@ -24,7 +24,6 @@ const ViewCategoryBooks = () => {
       res = await addToWishlist(id);
     }
     if (res) {
-      console.log(res.data);
       messageApi.success(res.data.Data);
       handleGetCategoryBook(catId);
     }
@@ -38,7 +37,6 @@ const ViewCategoryBooks = () => {
       res = await addToCart(id);
     }
     if (res) {
-      console.log(res.data);
       messageApi.success(res.data.Data);
       handleGetCategoryBook(catId);
     }
@@ -47,7 +45,6 @@ const ViewCategoryBooks = () => {
   const handleGetCategoryBook = async (id) => {
     const res = await getCategoryBooks(id);
     if (res) {
-      console.log(res.data);
       setBookData(res.data.Data);
     }
   };
