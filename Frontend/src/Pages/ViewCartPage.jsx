@@ -61,7 +61,7 @@ const ViewCartPage = () => {
       cartData.forEach((el) => {
         let temp = {};
         temp.bookId = el._id;
-        temp.price = el.price - (el.price * el.discount) / 100;
+        temp.price = (el.price - (el.price * el.discount) / 100).toFixed(2);
         itemData.push(temp);
       });
       const res = await purchaseBook(itemData, netPrice);
@@ -104,6 +104,7 @@ const ViewCartPage = () => {
       dataIndex: "title",
       key: "title",
       align: "center",
+      render: (text) => <span className="text-wrap">{text}</span>
     },
     {
       title: "Price",
@@ -115,7 +116,7 @@ const ViewCartPage = () => {
           {rec.price == 0 ? (
             "Free"
           ) : (
-            <>&#8377;{rec.price - (rec.price * rec.discount) / 100}</>
+            <>&#8377;{(rec.price - (rec.price * rec.discount) / 100).toFixed(2)}</>
           )}
         </div>
       ),
@@ -190,7 +191,7 @@ const ViewCartPage = () => {
     });
     setTotalPrice(count);
     setTotalDiscount(discount);
-    setNetPrice(count - discount);
+    setNetPrice((count - discount).toFixed(2));
   }, [cartData]);
 
   return (

@@ -123,7 +123,7 @@ const HomePage = () => {
                   View More
                 </Link>
               </div>
-              <div className="flex gap-[20px]">
+              <div className="flex gap-[20px] overflow-x-auto scrollbar-hide">
                 {data.products.map((book, idx) => {
                   return (
                     <BookCard

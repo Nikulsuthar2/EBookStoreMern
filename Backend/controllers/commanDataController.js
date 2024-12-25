@@ -8,7 +8,7 @@ const handleGetStats = async (req, res) => {
   const stats = {};
   if (req.user.role) {
     try {
-      const foundUser = await User.find().exec();
+      const foundUser = await User.find({role:{$ne : 1}}).exec();
       stats.totalUser = foundUser.length;
       const foundBook = await Book.find().exec();
       stats.totalBook = foundBook.length;
@@ -30,6 +30,28 @@ const handleGetStats = async (req, res) => {
       ]);
   
       stats.totalEarnings = totalEarnings[0]?.totalEarnings || 0;
+
+      const categoryWiseBooks = await Book.aggregate([
+        {
+          $lookup: {
+            from: "bookcategories",
+            localField: "category",
+            foreignField: "_id",
+            as: "categories", 
+          },
+        },
+        { $unwind: "$categories" },
+        {
+          $group: {
+            _id: "$categories.name",
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { count: -1 } },
+      ]);
+
+      stats.categoryWiseData = categoryWiseBooks;
+
 
       res.status(200).json({ Result: true, Data: stats });
     } catch (error) {

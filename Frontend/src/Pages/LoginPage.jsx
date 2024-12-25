@@ -77,11 +77,11 @@ const LoginPage = () => {
         ></Button>
         <span>Back to home</span>
       </div>
-      <div className="h-full pt-10 flex justify-center items-center">
+      <div className="h-full pt-10 flex justify-center items-center bg-gray-100">
         <Form
           onSubmit={handleLogin}
           onFinish={handleLogin}
-          className="flex flex-col min-w-[350px] gap-0 p-[20px] rounded-xl md:shadow-lg"
+          className="flex flex-col min-w-[350px] gap-0 p-[20px] rounded-xl md:shadow-lg bg-white"
         >
           <label className="text-center font-bold text-3xl mb-4">Login</label>
           <label>Email Address</label>

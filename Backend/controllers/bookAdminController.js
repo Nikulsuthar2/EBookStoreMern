@@ -50,8 +50,7 @@ const handleAddBook = async (req, res) => {
         .split(" ")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ");
-      console.log(category);
-      const categories = category
+      const categories = category == "" ? [] : category
         .split(",")
         .map((cat) => new mongoose.Types.ObjectId(cat));
 
@@ -71,7 +70,6 @@ const handleAddBook = async (req, res) => {
         bookurl: bookurl,
         thumbnail: thumbnailurl,
       };
-      console.log("here");
       const result = await Book.create(newBook);
       console.log(result);
       await result.save();

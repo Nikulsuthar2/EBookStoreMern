@@ -112,7 +112,7 @@ const ViewProductDetails = () => {
           <p className="flex items-center text-2xl gap-[10px]">
             <span className="font-semibold text-green-500">
               &#8377;
-              {bookData?.price - (bookData?.price * bookData?.discount) / 100}
+              {(bookData?.price - (bookData?.price * bookData?.discount) / 100).toFixed(2)}
             </span>
             <span className="line-through text-gray-500 font-semibold">
               &#8377;{bookData?.price}
@@ -169,7 +169,7 @@ const ViewProductDetails = () => {
             </>
           )}
         </span>
-        <div className="text-justify">{bookData?.description}</div>
+        <div className="text-justify text-pretty text">{bookData?.description}</div>
         <h3>Book Details</h3>
         <table className="font-semibold">
           <tbody>

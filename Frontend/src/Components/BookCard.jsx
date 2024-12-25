@@ -38,7 +38,7 @@ const BookCard = ({ book, handleWishlist, handleCart, handleAddMyBook }) => {
         <div className="flex gap-1">
           <span className="font-semibold text-green-600">
             &#8377;
-            {book.price - (book.price * book.discount) / 100}
+            {(book.price - (book.price * book.discount) / 100).toFixed(2)}
           </span>
           <span className="line-through text-gray-400 font-semibold">
             &#8377;{book.price}
