@@ -87,10 +87,16 @@ const handleGetCategoryWiseBooks = async (req, res) => {
         },
       },
       {
+        $addFields: {
+          bookCount: { $size: "$products" }, // Add a field to count the number of books in each category
+        },
+      },
+      {
         $project: {
           _id: 0,
           categoryId: "$_id.id",
           categoryName: "$_id.name",
+          bookCount: 1,
           products: {
             $slice: [
               {
@@ -115,7 +121,7 @@ const handleGetCategoryWiseBooks = async (req, res) => {
         },
       },
       {
-        $sort: { categoryName: 1 }, // Sort in ascending order by category name
+        $sort: { bookCount: -1 }, // Sort in ascending order by category name
       },
     ]);
     res.status(200).json({ Result: true, Data: foundBooks });
@@ -158,7 +164,7 @@ const handleGetBookDetails = async (req, res) => {
 const handleGetLatestBookDetails = async (req, res) => {
   try {
     const foundBook = await Book.findOne()
-      .sort({ createdAt: -1 })
+      .sort({ _id: -1 })
       .limit(1)
       .exec();
     if (!foundBook) {

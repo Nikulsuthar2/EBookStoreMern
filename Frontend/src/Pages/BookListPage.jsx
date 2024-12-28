@@ -149,7 +149,7 @@ const BookListPage = () => {
       title: "Title",
       dataIndex: "title",
       key: "title",
-      align: "center",
+      align: "left",
       fixed: "left",
       sorter: (a, b) => a.title.localeCompare(b.title),
       ...getColumnSearchProps("title"),
@@ -157,7 +157,7 @@ const BookListPage = () => {
     {
       title: "ISBN",
       dataIndex: "isbn",
-      align: "center",
+      align: "left",
       key: "isbn",
     },
     {
@@ -192,13 +192,13 @@ const BookListPage = () => {
     {
       title: "Author",
       dataIndex: "author",
-      align: "center",
+      align: "left",
       key: "author",
     },
     {
       title: "Publisher",
       dataIndex: "publisher",
-      align: "center",
+      align: "left",
       key: "publisher",
     },
     {

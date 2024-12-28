@@ -75,8 +75,8 @@ const SigninPage = () => {
         ></Button>
         <span>Back to home</span>
       </div>
-      <div className="h-full pt-10 flex justify-center items-center">
-        <Form className="flex flex-col min-w-[350px] gap-0 p-[20px] rounded-xl md:shadow-lg">
+      <div className="h-full pt-10 flex justify-center items-center bg-gray-100">
+        <Form className="flex flex-col min-w-[350px] gap-0 p-[20px] rounded-xl md:shadow-lg bg-white">
           <label className="text-center font-bold text-3xl mb-4">
             Create Account
           </label>
