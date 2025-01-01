@@ -64,13 +64,11 @@ const BookCategoryPage = () => {
       title: "ID",
       dataIndex: "_id",
       key: "id",
-      align: "center",
     },
     {
       title: "Category Name",
       dataIndex: "name",
       key: "name",
-      align: "center",
       editable: true,
     },
     {
@@ -250,9 +248,9 @@ const BookCategoryPage = () => {
   return (
     <div className="h-screen w-full overflow-x-hidden overflow-y-auto">
       {contextHolder}
-      <div className="bg-white flex font-bold text-2xl p-4 border-b-[1px] justify-between sticky top-0 z-50">
+      <div className="bg-white flex flex-wrap gap-2 font-bold text-2xl p-4 border-b-[1px] justify-between sticky top-0 z-50">
         Manage E-Books Categories
-        <div className="flex gap-2 font-medium">
+        <div className="flex flex-wrap md:flex-nowrap gap-2 font-medium">
           <Button shape="circle" onClick={handleGetCategory}>
             <MdRefresh />
           </Button>

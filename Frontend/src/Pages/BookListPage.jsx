@@ -151,6 +151,7 @@ const BookListPage = () => {
       key: "title",
       align: "left",
       fixed: "left",
+      width: 150,
       sorter: (a, b) => a.title.localeCompare(b.title),
       ...getColumnSearchProps("title"),
     },
@@ -327,9 +328,9 @@ const BookListPage = () => {
   return (
     <div className="h-screen w-full overflow-x-hidden overflow-y-auto">
       {contextHolder}
-      <div className="bg-white flex font-bold text-2xl p-4 border-b-[1px] justify-between  sticky top-0 z-50">
+      <div className="bg-white flex font-bold text-2xl p-4 border-b-[1px] flex-wrap gap-2 justify-between  sticky top-0 z-50">
         Manage E-Books
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button shape="circle" onClick={handleGetAllBooks}>
             <MdRefresh />
           </Button>
@@ -357,6 +358,9 @@ const BookListPage = () => {
           dataSource={booklist}
           rowKey="_id"
           size="small"
+          scroll={{
+            x: 600, // Horizontal scrolling if table content exceeds width
+          }}
         />
       </div>
     </div>

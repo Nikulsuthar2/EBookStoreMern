@@ -92,14 +92,14 @@ const PurchaseReport = () => {
   return (
     <div className="h-screen w-full overflow-x-hidden overflow-y-auto">
       {contextHolder}
-      <div className="bg-white flex justify-between gap-4 font-bold text-2xl p-4 border-b-[1px] sticky top-0 z-50">
+      <div className="bg-white flex flex-wrap justify-between gap-4 font-bold text-2xl p-4 border-b-[1px] sticky top-0 z-50">
         Purchase Report
         <Segmented
           options={["All", "BookWise"]}
           value={tabValue}
           onChange={setTabValue}
         />
-        <div className="flex gap-2">
+        <div className="flex md:flex-nowrap flex-wrap gap-2">
           <Button shape="circle" onClick={refreshData}>
             <MdRefresh />
           </Button>

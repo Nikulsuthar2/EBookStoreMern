@@ -147,6 +147,7 @@ const SigninPage = () => {
               variant="filled"
               placeholder="Enter your password"
               allowClear
+              autoComplete="new-password"
               required={true}
             />
           </Form.Item>
@@ -171,6 +172,7 @@ const SigninPage = () => {
               size="large"
               variant="filled"
               placeholder="Confirm your password"
+              autoComplete="new-password"
               allowClear
               required={true}
             />

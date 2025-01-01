@@ -1,70 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { validate } from "email-validator";
-import { PulseLoader } from "react-spinners";
-import { decodeJWT, isLoggedIn, loginUser } from "../Utils/UserAuthApi";
+import React, { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
 import { Button, Form, Input, message } from "antd";
+import { validate } from "email-validator";
+import { PulseLoader } from "react-spinners";
+import { requestPasswordReset } from "../Utils/UserAuthApi";
+import { useNavigate } from "react-router-dom";
 
-const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+const ForgotPassword = () => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleForgotPassword = async (e) => {
     //e.preventDefault();
     if (!validate(email)) {
       messageApi.warning("Please enter a valid email address");
       return;
     }
-    const user = {
-      email: email,
-      pswd: password,
-    };
-
     setIsSubmitting(true);
     messageApi.open({
       type: "loading",
-      content: "Logging in..",
+      content: "Sending email..",
       duration: 0,
     });
-    const res = await loginUser(user);
+    const res = await requestPasswordReset(email);
     setIsSubmitting(false);
     messageApi.destroy();
     if (res.data.Result) {
-      messageApi.success("Account Created");
-      const token = res.data.token;
-      localStorage.setItem("accessToken", res.data.token);
-      localStorage.setItem("userInfo", decodeJWT(token).UserInfo);
-      if (decodeJWT(token).UserInfo.role === 1) {
-        navigate("/admin");
-      } else {
-        navigate("/home");
-      }
+      messageApi.success(res.data.Data);
     } else {
       messageApi.error(res.data.Data);
     }
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    const isLogin = async () => {
-      const res = await isLoggedIn(token);
-      if (res) {
-        if (decodeJWT(token).UserInfo.role) {
-          navigate("/admin");
-        } else {
-          navigate("/home");
-        }
-      }
-    };
-    isLogin();
-  }, []);
-
   return (
     <div className="h-screen">
       {contextHolder}
@@ -79,11 +48,13 @@ const LoginPage = () => {
       </div>
       <div className="h-full pt-10 flex justify-center items-center bg-gray-100">
         <Form
-          onSubmit={handleLogin}
-          onFinish={handleLogin}
+          onSubmit={handleForgotPassword}
+          onFinish={handleForgotPassword}
           className="flex flex-col min-w-[350px] gap-0 p-[20px] rounded-xl md:shadow-lg bg-white"
         >
-          <label className="text-center font-bold text-3xl mb-4">Login</label>
+          <label className="text-center font-bold text-3xl mb-4">
+            Forgot Password
+          </label>
           <label>Email Address</label>
           <Form.Item
             name="email"
@@ -108,47 +79,26 @@ const LoginPage = () => {
               allowClear
             />
           </Form.Item>
-          <label>Password</label>
-          <Form.Item
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please input your password!",
-              },
-              {
-                type: "string",
-                min: 8,
-                max: 16,
-              },
-            ]}
-          >
-            <Input.Password
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-              size="large"
-              variant="filled"
-              placeholder="Enter your password"
-              allowClear
-            />
-          </Form.Item>
-          <Link to="/forgotpassword" className="text-right mb-2">Forgot Password?</Link>
           <Button
             htmlType="submit"
             type="primary"
             size="large"
             disabled={isSubmitting}
           >
-            {isSubmitting ? <PulseLoader color="black" size={10} /> : "Login"}
+            {isSubmitting ? (
+              <PulseLoader color="black" size={10} />
+            ) : (
+              "Send Reset Email"
+            )}
           </Button>
           <span className="text-center">
             <Button
               htmlType="button"
               type="link"
               size="large"
-              onClick={() => navigate("/signin")}
+              onClick={() => navigate("/login")}
             >
-              Don't have an account?
+              Back to login
             </Button>
           </span>
         </Form>
@@ -157,4 +107,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default ForgotPassword;

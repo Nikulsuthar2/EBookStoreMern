@@ -25,6 +25,8 @@ import NotFound from "./Pages/NotFound";
 import UserProfilePage from "./Pages/UserProfilePage";
 import PaymentSuccessPage from "./Pages/PaymentSuccessPage";
 import BookReaderPage from "./Pages/BookReaderPage";
+import ForgotPassword from "./Pages/ForgotPassword";
+import ResetPassword from "./Pages/ResetPassword";
 
 function App() {
   const router = createBrowserRouter(
@@ -35,6 +37,8 @@ function App() {
           <Route index element={<Landing />}></Route>
           <Route path="/login" element={<LoginPage />}></Route>
           <Route path="/signin" element={<SigninPage />}></Route>
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/resetpassword/:token" element={<ResetPassword />} />
           <Route path="*" element={<NotFound />} />
         </Route>
         {/* Users Pages */}

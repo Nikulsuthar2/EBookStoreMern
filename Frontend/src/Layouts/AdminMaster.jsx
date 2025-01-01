@@ -93,7 +93,7 @@ const AdminMaster = () => {
 
   return (
     <div className="h-screen overflow-hidden">
-      <Layout>
+      <Layout >
         <Sider
           breakpoint="md"
           theme="light"

@@ -89,6 +89,34 @@ const isLoggedIn = async (token) => {
   return false;
 };
 
+const requestPasswordReset = async (email) => {
+  try {
+    const res = await axios
+    .post(
+      import.meta.env.VITE_BACKEND_URL + "auth/request-password-reset",
+      {email: email},
+    );
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+  return res;
+};
+
+const resetPassword = async (token, newPassword) => {
+  try {
+    const res = await axios
+    .post(
+      import.meta.env.VITE_BACKEND_URL + "auth/reset-password",
+      {token: token, newPassword: newPassword},
+    );
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+  return res;
+};
+
 export {
   createUser,
   loginUser,
@@ -97,4 +125,6 @@ export {
   isTokenExpired,
   refreshAccessToken,
   isLoggedIn,
+  requestPasswordReset,
+  resetPassword
 };

@@ -1,14 +1,15 @@
+import sendEmail from "../config/mail.js";
 import Book from "../models/bookSchema.js";
 import Category from "../models/categorySchema.js";
 import Purchase from "../models/purchaseSchema.js";
 import User from "../models/userSchema.js";
-import fs from 'fs';
+import fs from "fs";
 
 const handleGetStats = async (req, res) => {
   const stats = {};
   if (req.user.role) {
     try {
-      const foundUser = await User.find({role:{$ne : 1}}).exec();
+      const foundUser = await User.find({ role: { $ne: 1 } }).exec();
       stats.totalUser = foundUser.length;
       const foundBook = await Book.find().exec();
       stats.totalBook = foundBook.length;
@@ -18,7 +19,7 @@ const handleGetStats = async (req, res) => {
         {
           $group: {
             _id: null,
-            totalEarnings: { $sum: '$totalAmount' },
+            totalEarnings: { $sum: "$totalAmount" },
           },
         },
         {
@@ -28,7 +29,7 @@ const handleGetStats = async (req, res) => {
           },
         },
       ]);
-  
+
       stats.totalEarnings = totalEarnings[0]?.totalEarnings || 0;
 
       const categoryWiseBooks = await Book.aggregate([
@@ -37,7 +38,7 @@ const handleGetStats = async (req, res) => {
             from: "bookcategories",
             localField: "category",
             foreignField: "_id",
-            as: "categories", 
+            as: "categories",
           },
         },
         { $unwind: "$categories" },
@@ -51,7 +52,6 @@ const handleGetStats = async (req, res) => {
       ]);
 
       stats.categoryWiseData = categoryWiseBooks;
-
 
       res.status(200).json({ Result: true, Data: stats });
     } catch (error) {
@@ -163,10 +163,7 @@ const handleGetBookDetails = async (req, res) => {
 
 const handleGetLatestBookDetails = async (req, res) => {
   try {
-    const foundBook = await Book.findOne()
-      .sort({ _id: -1 })
-      .limit(1)
-      .exec();
+    const foundBook = await Book.findOne().sort({ _id: -1 }).limit(1).exec();
     if (!foundBook) {
       return res.status(404).json({ Result: false, Data: "Book not found" });
     }
@@ -284,13 +281,17 @@ const handleAddToMyBook = async (req, res) => {
 
 const handleGetMyDetails = async (req, res) => {
   try {
-    const foundUser = await User.findOne({ _id: req.user.id }).populate(['mybooks', 'wishlist']).exec();
+    const foundUser = await User.findOne({ _id: req.user.id })
+      .populate(["mybooks", "wishlist"])
+      .exec();
     // Convert mybooks to a Set for quick lookup
-    const myBooksSet = new Set(foundUser.mybooks.map(book => book._id.toString()));
-    const cartSet = new Set(foundUser.cart.map(book => book._id.toString()));
+    const myBooksSet = new Set(
+      foundUser.mybooks.map((book) => book._id.toString())
+    );
+    const cartSet = new Set(foundUser.cart.map((book) => book._id.toString()));
 
     // Add isInCart and isInMyBook fields to each book in the wishlist
-    const enhancedWishlist = foundUser.wishlist.map(book => {
+    const enhancedWishlist = foundUser.wishlist.map((book) => {
       return {
         ...book.toObject(),
         isInCart: cartSet.has(book._id.toString()),
@@ -298,7 +299,10 @@ const handleGetMyDetails = async (req, res) => {
         isInWishlist: true,
       };
     });
-    res.status(200).json({ Result: true, Data: { ...foundUser.toObject(), wishlist: enhancedWishlist } });
+    res.status(200).json({
+      Result: true,
+      Data: { ...foundUser.toObject(), wishlist: enhancedWishlist },
+    });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -336,7 +340,7 @@ const handleSearchBook = async (req, res) => {
       ],
     });
 
-    const booksWithUserStatus = books.map(book => {
+    const booksWithUserStatus = books.map((book) => {
       const bookId = book._id;
       return {
         ...book._doc,
@@ -433,18 +437,44 @@ const handlePurchaseBook = async (req, res) => {
         { new: true }
       );
 
-      await User.findByIdAndUpdate(
-        req.user.id,
-        { $set: { cart: [] } },
+      await User.findByIdAndUpdate(req.user.id, { $set: { cart: [] } });
+
+      const bookDetails = await Book.find({
+        _id: { $in: bookIds },
+      });
+
+      const itemsWithDetails = items.map((item) => {
+        const book = bookDetails.find(
+          (book) => book._id.toString() === item.bookId.toString()
+        );
+        return {
+          ...item,
+          bookTitle: book ? book.title : "Unknown",
+          originalPrice: book ? book.price : item.price,
+          discount: book ? book.discount : 0,
+        };
+      });
+
+      const emailContent = generateReceiptHtml(
+        itemsWithDetails,
+        totalAmount,
+        result._id,
+        result.paymentDate
       );
 
+      sendEmail(
+        req.user.email,
+        "Your eBook Purchase Receipt",
+        "",
+        emailContent
+      );
       res.status(201).json({
         Result: true,
         Data: "Purchase successful and books added to user library",
-        OrderId: result._id
+        OrderId: result._id,
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       res
         .status(500)
         .json({ error: "An error occurred while processing the purchase." });
@@ -456,9 +486,99 @@ const handlePurchaseBook = async (req, res) => {
   }
 };
 
+const generateReceiptHtml = (items, totalAmount, orderId, date) => {
+  const dt = new Date(date);
+
+  // Format the date into a human-readable format
+  const formattedDate = dt.toLocaleDateString("en-US", {
+    weekday: "long", // Day of the week (e.g., "Monday")
+    year: "numeric", // Full year (e.g., "2024")
+    month: "long", // Full month name (e.g., "November")
+    day: "numeric", // Day of the month (e.g., "16")
+  });
+  let itemsHtml = "";
+  items.forEach((item) => {
+    itemsHtml += `
+      <tr>
+        <td>${item.bookTitle}</td>
+        <td class="oprice">₹${item.originalPrice}</td>
+        <td class="discount">${item.discount}%</td>
+        <td class="price">₹${item.price}</td>
+      </tr>
+    `;
+  });
+
+  const htmlContent = `
+    <html>
+  <head>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #f4f4f4;
+      }
+      .oprice {
+        text-decoration: line-through;
+        font-weight: bold;
+      }
+      .price {
+        font-weight: bold;
+        color: green;
+      }
+      .discount {
+        font-weight: bold;
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 style="text-align: center;padding: 20px 0px;">Thanks for your payment!</h1>
+    <div>
+        <p><strong>Order ID:</strong> ${orderId}</p>
+        <p><strong>Date:</strong> ${formattedDate}</p>
+    </div>
+    <table border="1" cellpadding="5">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Original Price</th>
+          <th>Discount</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${itemsHtml}
+      </tbody>
+    </table>
+    <p><strong>Total Amount: </strong>$${totalAmount}</p>
+    <p style="text-align: center; margin: 50px 0px;">Thank you for shopping with us!</p>
+  </body>
+</html>
+  `;
+
+  return htmlContent;
+};
+
 const handleGetMyPurchaseData = async (req, res) => {
   try {
-    const purchase = await Purchase.find({userId:req.user.id}).sort({paymentDate:-1}).populate("items.bookId").exec();
+    const purchase = await Purchase.find({ userId: req.user.id })
+      .sort({ paymentDate: -1 })
+      .populate("items.bookId")
+      .exec();
 
     if (!purchase) {
       return res.status(404).json({ error: "No Purchase found." });
@@ -470,14 +590,14 @@ const handleGetMyPurchaseData = async (req, res) => {
       .status(500)
       .json({ error: "An error occurred while fetching the purchase." });
   }
-}
+};
 
 const handleBookStream = async (req, res) => {
-  const {bookId} = req.params;
-  console.log("getting book",bookId)
+  const { bookId } = req.params;
+  console.log("getting book", bookId);
   try {
     const book = await Book.findById(bookId);
-    console.log(book)
+    console.log(book);
     if (!book) {
       return res.status(404).json({ message: "Book not found" });
     }
