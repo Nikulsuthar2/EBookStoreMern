@@ -63,6 +63,8 @@ Ensure you have the following installed:
     ORIGIN=frontend_baseurl
     ACCESS_TOKEN_SECRET=your_jwt_access_token
     REFRESH_TOKEN_SECRET=your_jwt_refresh_token
+    MAIL_USER=your_smtp_email_address
+    MAIL_PASSWORD=your_email_password_or_app_password
     ```
 - Create a `.env` file in the Frontend directory with the following
     ```env
