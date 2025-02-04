@@ -45,7 +45,8 @@ const logoutUser = async () => {
 const decodeJWT = (token) => {
   try {
     return JSON.parse(atob(token.split(".")[1]));
-  } catch (e) {
+  } catch (err) {
+    console.log(err);
     return null;
   }
 };

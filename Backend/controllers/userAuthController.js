@@ -12,7 +12,7 @@ const handleNewUser = async (req, res) => {
       .json({ Result: false, Data: "Name, email and password are required" });
 
   //check for already exist
-  const duplicate = await User.findOne({ email }).exec();
+  const duplicate = await User.findOne({ email:email.toLowerCase() }).exec();
   if (duplicate)
     return res.status(409).json({ Result: false, Data: "Email already exist" }); //conflict
 
@@ -23,7 +23,7 @@ const handleNewUser = async (req, res) => {
     // store new user
     const newUser = {
       name: name,
-      email: email,
+      email: email.toLowerCase(),
       password: hashedPWD,
       role: role ?? 0,
     };
@@ -65,7 +65,7 @@ const handleLogin = async (req, res) => {
       .status(400)
       .json({ Result: false, Data: "Email and password are required" });
 
-  const foundUser = await User.findOne({ email }).exec();
+  const foundUser = await User.findOne({ email:email.toLowerCase() }).exec();
   if (!foundUser)
     return res.status(401).json({ Result: false, Data: "User not exist" });
 
