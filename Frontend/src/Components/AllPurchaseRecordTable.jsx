@@ -37,13 +37,13 @@ const AllPurchaseRecordTable = ({ purchaseData }) => {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (_, rec) => <div>{rec.userId.name}</div>,
+      render: (_, rec) => <div>{rec.userId?.name}</div>,
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      render: (_, rec) => <div>{rec.userId.email}</div>,
+      render: (_, rec) => <div>{rec.userId?.email}</div>,
     },
     {
       title: "Total Items",
